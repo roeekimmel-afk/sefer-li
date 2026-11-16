@@ -831,7 +831,7 @@ async function spSentPick(){const T=await getTexts();const lv=[[2,4,40],[3,6,55]
       if(n>=lv[0]&&n<=lv[1]&&w.length<=lv[2]&&!spRecent.includes(w))c.push(w)}
     if(c.length){const w=c[Math.random()*c.length|0];spRecent.push(w);if(spRecent.length>12)spRecent.shift();return {w,en:'',s:x.s,sent:1}}}
   return null}
-function spDictate(s){const w=spClean(s);if(!w)return;spEl('spell').classList.remove('hidden');spStat();SP={games:['sent'],n:0,i:0,ok:0,miss:[],xp:0,fixed:w,fromLearn:1};spShow('spgame');spNext()}
+function spDictate(s){const w=spClean(s);if(!w)return;spEl('spell').classList.remove('hidden');spStat();SP={games:['sent'],n:0,i:0,ok:0,miss:[],xp:0,fixed:w,src:s,fromLearn:1};spShow('spgame');spNext()}
 function spBack(){sayStop();spEl('spell').classList.add('hidden');SP=null}
 function spStart(games,n){SP={games,n,i:0,ok:0,miss:[],xp:0};spShow('spgame');spNext()}
 async function spNext(){if(SP.n&&SP.i>=SP.n)return spEnd();
@@ -844,7 +844,7 @@ async function spNext(){if(SP.n&&SP.i>=SP.n)return spEnd();
   if(g==='sent'){const w=SP.fixed?{w:SP.fixed,en:'',s:-1,sent:1}:await spSentPick();
     if(w){spW=w;spEl('spans').classList.add('sm');spEl('spq').innerHTML=head+`<div class="sen">…</div><div><button class="spsay" data-say>🔊</button> <button class="spsay" data-slow>🐢</button></div><div class="wtip">👇 לחצו על 🔊 מעל מילה כדי לשמוע רק אותה<small class="en" dir="ltr">Tap 🔊 above a word to hear just that word</small>✓ כל מילה נבדקת אוטומטית כשמסיימים אותה<small class="en" dir="ltr">Each word is checked automatically when you finish it</small></div>`;
       {const e=document.querySelector('#spq .sen'),W=spW;trans(W.w).then(t=>{W.en=t.en||'';e.textContent=W.en}).catch(()=>{e.textContent=''})}
-      spKb();spRender();say(spW.w);return}
+      spCtx(spW,SP.fixed&&SP.src);spKb();spRender();say(spW.w);return}
     SP.g='hear'}
   if(g==='fill'){const T=await getTexts();const sent=spSent(T[spW.s]||'',spW.w);
     if(sent){spEl('spq').innerHTML=head+`<div class="sent">${esc(sent.replace(sent.match(spRe(spW.w))[0],m=>m.replace(spW.w,'＿'.repeat(spW.w.length))))}</div><div class="sen">…</div>${sayB}`;
@@ -857,6 +857,15 @@ async function spNext(){if(SP.n&&SP.i>=SP.n)return spEnd();
   if(SP.g==='tiles'){const L=[...spW.w];const d=[];for(const c of L){const x=LOOK[c];if(x&&!L.includes(x)&&!d.includes(x)&&d.length<3)d.push(x)}
     spTiles=[...L,...d].map(c=>({c,u:0})).sort(()=>Math.random()-.5);}
   spKb();spRender();say(spW.w)}
+/* per-word audio: vowel each word from its sentence context (Dicta) so 🔊 on one word sounds like it does in the sentence */
+function spWv(toks,words){const vw=[];for(const t of toks){if(t.p==null)continue;for(const x of (t.v||t.p).split(/[־\s]+/)){const y=x.replace(/[^א-ת֑-ׇ]/g,'');if(/[א-ת]/.test(y))vw.push(y)}}
+  const key=x=>[...plain(x)].map(c=>SFIN[c]||c).filter(c=>c!=='ו'&&c!=='י').join(''),out=[];let j=0;
+  for(const w of words){let f=-1;for(let d=0;d<3&&j+d<vw.length;d++)if(key(vw[j+d])===key(w)){f=j+d;break}
+    if(f>=0){out.push(vw[f]);j=f+1}else out.push(null)}
+  return out}
+function spCtx(W,src){W.nv=null;const words=W.w.split(' ');
+  const go=s=>nikud(s).then(t=>{const r=spWv(t,words);if(r.some(x=>x))W.nv=r;return r});
+  return go(src||W.w).then(r=>src&&r.some(x=>!x)?go(W.w).then(r2=>{W.nv=r.map((x,k)=>x||r2[k]);return W.nv}):r).catch(()=>{})}
 function spRe(w){return new RegExp('(^|[^א-ת])[ובלכמהש]{0,2}'+w+'(?![א-ת])')}
 function spSent(t,w){const ss=splitSents(t.split('\n'));const re=spRe(w);const c=ss.map(s=>s.replace(/[֑-ׇ]/g,'')).filter(s=>re.test(s)&&s.length<140);return c.sort((a,b)=>a.length-b.length)[0]||''}
 function spKb(){if(spTiles){spEl('spkb').innerHTML=`<div class="tiles">${spTiles.map((t,k)=>`<button class="k ${t.u?'used':''}" data-t="${k}">${t.c}</button>`).join('')}</div>`;return}
@@ -928,7 +937,7 @@ spEl('spell').addEventListener('click',e=>{const t=e.target.closest('button');if
   if(t.dataset.c!=null){const c=t.dataset.c;if(c==='⌫'){if(spIn.length<=spLock)return;spIn.pop();while(spIn.length>spLock&&spIn[spIn.length-1]===' ')spIn.pop()}else if(spIn.length<spW.w.length){if(spW.w[spIn.length]===' ')spIn.push(' ');spIn.push(c);spRender();if(spW.sent&&(spIn.length===spW.w.length||spW.w[spIn.length]===' '))spCheck();return}else{const a=spEl('spans');a.classList.remove('full');void a.offsetWidth;a.classList.add('full');return}spRender();return}
 });
 spEl('spans').addEventListener('click',e=>{const w=e.target.closest('[data-w]');if(w){const x=spW.w.split(' ')[+w.dataset.w];
-    document.querySelectorAll('#spans .ws.on').forEach(b=>b.classList.remove('on'));w.classList.add('on');setTimeout(()=>w.classList.remove('on'),1200);say(x);return}
+    document.querySelectorAll('#spans .ws.on').forEach(b=>b.classList.remove('on'));w.classList.add('on');setTimeout(()=>w.classList.remove('on'),1200);const v=spW.nv&&spW.nv[+w.dataset.w];say(v||x,undefined,undefined,!!v);return}
   const s=e.target.closest('[data-a]');if(!s||spDone)return;const k=+s.dataset.a;
   if(spFix){if(spFix[k]!=='ok'){spFixK=k;spRender(spFix);spFixKb()}return}if(!spTiles)return;if(k>=spIn.length)return;
   spTiles[spIn[k]].u=0;spIn.splice(k,1);spKb();spRender()});
