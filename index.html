@@ -263,6 +263,7 @@ h2.sec .bi .en{font-size:12.5px;color:var(--muted)}
 #spans .ok{background:#d9f7df;border-color:#3cba5c!important}#spans .bad{background:#ffe0e0;border-color:#e5484d!important}#spans .miss{background:#f1f1f1;color:#aaa;border-style:dotted}
 #spfb{text-align:center;min-height:30px;font-weight:800;font-size:17px}#spfb .nk{font-size:30px;display:block}
 #spkb{direction:rtl;margin-top:auto}
+#spkb .r{direction:ltr}
 #spkb .r{display:flex;justify-content:center;gap:4px;margin:4px 0}
 #spkb .k{flex:1;max-width:38px;height:46px;border-radius:9px;background:#fff;border:1px solid #d9cfe3;box-shadow:0 2px 0 #d9cfe3;font-size:21px;font-weight:800;color:var(--rink);padding:0}
 #spkb .k.w{max-width:90px;flex:2;font-size:16px}
@@ -297,6 +298,8 @@ h2.sec .bi .en{font-size:12.5px;color:var(--muted)}
 #spq .wtip{font-size:13px;font-weight:700;color:#d9731f}
 #spq .wtip small{display:block;font-weight:600}
 #spans.sm{row-gap:10px}
+
+#spq .wtip small{margin-bottom:3px}
 
 </style>
 <link rel="apple-touch-icon" href="apple-touch-icon.png"></head>
@@ -772,7 +775,7 @@ const TRICK={'ט':'ת','ת':'ט','כ':'ק','ק':'כ','ס':'ש','ש':'ס','א':'�
 const LOOK={'ב':'כ','כ':'ב','ד':'ר','ר':'ד','ה':'ח','ח':'ה','ו':'ז','ז':'ו','ט':'ת','ת':'ט','ס':'ם','ם':'ס','ע':'צ','צ':'ע','נ':'ג','ג':'נ','ק':'ה','י':'ו','ש':'ס','א':'ע','מ':'ט','ל':'כ','פ':'כ'};
 const KB=['קראטוןםפ','שדגכעיחלךף','זסבהנמצתץ'];
 let SB=LS.get('spell',{}),spLv=LS.get('splv',0),spSel=LS.get('spsel',['hear','tiles','fill','tricky']),spN=LS.get('spn',10);
-let SP=null,spW=null,spIn=[],spTiles=null,spFirst=true,spHinted=false,spDone=false,spCh=null,spFix=null,spFixK=-1;
+let SP=null,spW=null,spIn=[],spTiles=null,spFirst=true,spHinted=false,spDone=false,spCh=null,spFix=null,spFixK=-1,spLock=0;
 const spEl=id=>document.getElementById(id);
 function spStat(){spEl('spstat').textContent=`🔥 ${DAYS.n||0}  ⭐ ${XP}  ✍️ ${Object.values(SB).filter(b=>b>=3).length}`}
 function spellOpen(){spEl('spell').classList.remove('hidden');document.body.style.overflow='hidden';if(!SP)spHome();spStat()}
@@ -804,14 +807,14 @@ function spDictate(s){const w=spClean(s);if(!w)return;spEl('spell').classList.re
 function spBack(){sayStop();spEl('spell').classList.add('hidden');SP=null}
 function spStart(games,n){SP={games,n,i:0,ok:0,miss:[],xp:0};spShow('spgame');spNext()}
 async function spNext(){if(SP.n&&SP.i>=SP.n)return spEnd();
-  const g=SP.games[Math.random()*SP.games.length|0];SP.g=g;spW=spPick(g);spIn=[];spFirst=true;spHinted=false;spDone=false;spCh=null;spTiles=null;spFix=null;spFixK=-1;
+  const g=SP.games[Math.random()*SP.games.length|0];SP.g=g;spW=spPick(g);spIn=[];spFirst=true;spHinted=false;spDone=false;spCh=null;spTiles=null;spFix=null;spFixK=-1;spLock=0;
   spEl('spprog').firstChild.style.width=SP.n?(SP.i/SP.n*100)+'%':'0';spEl('spfb').innerHTML='';
-  spEl('sphint').disabled=spEl('spshow').disabled=false;spEl('spcheck').classList.toggle('hidden',g==='tricky');
+  spEl('sphint').disabled=spEl('spshow').disabled=false;spEl('spcheck').classList.toggle('hidden',g==='tricky');spEl('spcheck').innerHTML='✓ בדיקה<small class="en">Check</small>';
   const head=`<div class="gt">${SPG.find(x=>x[0]==g)[1]} · ${SPG.find(x=>x[0]==g)[2]}${SP.n?` · ${SP.i+1}/${SP.n}`:''}</div>`;
   const sayB=`<button class="spsay" data-say>🔊</button>`;
   spEl('spans').classList.remove('sm');
   if(g==='sent'){const w=SP.fixed?{w:SP.fixed,en:'',s:-1,sent:1}:await spSentPick();
-    if(w){spW=w;spEl('spans').classList.add('sm');spEl('spq').innerHTML=head+`<div class="sen">…</div><div><button class="spsay" data-say>🔊</button> <button class="spsay" data-slow>🐢</button></div><div class="wtip">👇 לחצו על 🔊 מעל מילה כדי לשמוע רק אותה<small class="en" dir="ltr">Tap 🔊 above a word to hear just that word</small></div>`;
+    if(w){spW=w;spEl('spans').classList.add('sm');spEl('spq').innerHTML=head+`<div class="sen">…</div><div><button class="spsay" data-say>🔊</button> <button class="spsay" data-slow>🐢</button></div><div class="wtip">👇 לחצו על 🔊 מעל מילה כדי לשמוע רק אותה<small class="en" dir="ltr">Tap 🔊 above a word to hear just that word</small>✓ אפשר לבדוק אחרי כל מילה<small class="en" dir="ltr">Press ✓ Check after any word to check it</small></div>`;
       {const e=document.querySelector('#spq .sen'),W=spW;trans(W.w).then(t=>{W.en=t.en||'';e.textContent=W.en}).catch(()=>{e.textContent=''})}
       spKb();spRender();say(spW.w);return}
     SP.g='hear'}
@@ -829,9 +832,9 @@ async function spNext(){if(SP.n&&SP.i>=SP.n)return spEnd();
 function spRe(w){return new RegExp('(^|[^א-ת])[ובלכמהש]{0,2}'+w+'(?![א-ת])')}
 function spSent(t,w){const ss=splitSents(t.split('\n'));const re=spRe(w);const c=ss.map(s=>s.replace(/[֑-ׇ]/g,'')).filter(s=>re.test(s)&&s.length<140);return c.sort((a,b)=>a.length-b.length)[0]||''}
 function spKb(){if(spTiles){spEl('spkb').innerHTML=`<div class="tiles">${spTiles.map((t,k)=>`<button class="k ${t.u?'used':''}" data-t="${k}">${t.c}</button>`).join('')}</div>`;return}
-  spEl('spkb').innerHTML=KB.map(r=>`<div class="r">${[...r].map(c=>`<button class="k" data-c="${c}">${c}</button>`).join('')}</div>`).join('')+`<div class="r"><button class="k w" data-c="⌫">⌫</button></div>`}
+  spEl('spkb').innerHTML=KB.map((r,i)=>`<div class="r">${[...r].map(c=>`<button class="k" data-c="${c}">${c}</button>`).join('')}${i?'':'<button class="k w" data-c="⌫">⌫</button>'}</div>`).join('')}
 function spRender(marks){const n=Math.max(spW.w.length,spIn.length);let j=0;const ws=()=>spW.sent?`<b class="wd"><button class="ws" data-w="${j++}">🔊</button><b class="ls">`:'<b class="wd"><b class="ls">';let h=ws();
-  for(let k=0;k<n;k++){if(spW.w[k]===' '){h+='</b></b>'+ws();continue}const c=spIn[k];const m=marks?marks[k]:'';h+=`<span class="${c!=null?'f':''} ${m}${spFix&&k===spFixK?' sel':''}" data-a="${k}">${c!=null?(spTiles?spTiles[c].c:c):(m==='miss'&&!spFix?spW.w[k]:'')}</span>`}
+  for(let k=0;k<n;k++){if(spW.w[k]===' '){h+='</b></b>'+ws();continue}const c=spIn[k];const m=marks?marks[k]:k<spLock?'ok':'';h+=`<span class="${c!=null?'f':''} ${m}${spFix&&k===spFixK?' sel':''}" data-a="${k}">${c!=null?(spTiles?spTiles[c].c:c):(m==='miss'&&!spFix?spW.w[k]:'')}</span>`}
   spEl('spans').innerHTML=h+'</b></b>'}
 const spTxt=()=>spIn.map(c=>spTiles?spTiles[c].c:c).join('');
 function spMarks(){const a=spIn.map(c=>spTiles?spTiles[c].c:c),b=spW.w;const out=[];for(let k=0;k<Math.max(a.length,b.length);k++)out.push(b[k]===' '?'ok':a[k]==null?'miss':norm(a[k])===norm(b[k]||'')?'ok':'bad');return out}
@@ -844,6 +847,12 @@ function spResult(ok){if(spDone)return;spDone=true;spEl('sphint').disabled=spEl(
   LS.set('spell',SB);spStat();spReveal();SP.i++;
   const b=spEl('spcheck');b.classList.remove('hidden');b.innerHTML=SP.fromLearn?'↩ חזרה לסיפור<small class="en">Back to the story</small>':'הבא ←<small class="en">Next</small>';b.dataset.next=1}
 function spCheck(){if(spDone)return SP.fromLearn?spBack():spNext();if(!spIn.length)return;
+  if(spW.sent&&spIn.length<spW.w.length){let e=-1;for(let k=0;k<=spIn.length;k++)if(spW.w[k]===' ')e=k;
+    if(e<=spLock)return toast('סיימו להקליד מילה ואז בדקו · Finish a word, then check');
+    const m=spMarks().slice(0,e);
+    if(m.every(x=>x==='ok')){spLock=e;spRender();spEl('spfb').innerHTML=`✅ נכון! המשיכו <small class="en" dir="ltr" style="display:inline">Correct! Keep going</small>`;return}
+    spFirst=false;spFix=m;spFixK=-1;spRender(spFix);spEl('spcheck').classList.add('hidden');
+    spEl('spfb').innerHTML=`❌ כמעט! לחצו על אות אדומה כדי לתקן <small class="en" dir="ltr" style="display:block">Almost! Tap a red letter to fix it</small><div class="right">✔️ <span>${esc(spW.w.slice(0,e))}</span></div>`;spFixKb();say(spW.w.slice(0,e),.6);return}
   if(norm(spTxt())===norm(spW.w)){spRender(spW.w.split('').map(()=>'ok'));return spResult(true)}
   const m=spMarks();
   if(!spTiles){spFirst=false;if(!spW.sent)SB[spW.w]=0;spFix=m.slice(0,spW.w.length);spFixK=-1;spRender(spFix);spEl('spcheck').classList.add('hidden');
@@ -855,6 +864,8 @@ function spFixKb(){const k=spFixK;if(k<0){spEl('spkb').innerHTML=`<div class="fi
   const all=KB.join('').replace(/[ךםןףץ]/g,'');while(o.length<4){const c=all[Math.random()*all.length|0];if(!o.some(x=>norm(x)===norm(c)))o.push(c)}
   spEl('spkb').innerHTML=`<div class="fixmsg">איזו אות? <small class="en" dir="ltr" style="display:inline">Which letter?</small></div><div class="ch fx">${o.sort(()=>Math.random()-.5).map(c=>`<button class="k" data-fx="${c}">${c}</button>`).join('')}</div>`}
 function spFixSet(k,c){spIn[k]=c;spFix[k]='ok';spFixK=-1;spRender(spFix);
+  if(spFix.every(x=>x==='ok')&&spFix.length<spW.w.length){spLock=spFix.length;spFix=null;spRender();spKb();spEl('spcheck').classList.remove('hidden');
+    spEl('spfb').innerHTML=`✅ תוקן! המשיכו להקליד <small class="en" dir="ltr" style="display:inline">Fixed! Keep typing</small>`;return}
   if(spFix.every(x=>x==='ok')){spIn=[...spW.w];spFix=null;spRender(spW.w.split('').map(()=>'ok'));return spResult(true)}spFixKb()}
 function spEnd(){const pct=Math.round(SP.ok/SP.n*100);spShow('spend');if(pct>=70)confetti();
   spEl('spend').innerHTML=`<div class="big">${pct>=90?'🏆':pct>=70?'🌟':'💪'} ${SP.ok}/${SP.n}</div><div><b>${pct}%</b> · +${SP.xp} ⭐ XP</div>`+
@@ -886,7 +897,7 @@ spEl('spell').addEventListener('click',e=>{const t=e.target.closest('button');if
   if(t.dataset.t!=null){const k=+t.dataset.t;if(spTiles[k].u||spIn.length>=spW.w.length)return;spTiles[k].u=1;spIn.push(k);spKb();spRender();return}
   if(t.dataset.c!=null&&spCh){const ok=t.dataset.c===spCh.c;t.style.background=ok?'#d9f7df':'#ffe0e0';spEl('spq').querySelector('.word b').textContent=spCh.c;
     if(!ok)spFirst=false;spResult(ok);return}
-  if(t.dataset.c!=null){const c=t.dataset.c;if(c==='⌫'){spIn.pop();while(spIn.length&&spIn[spIn.length-1]===' ')spIn.pop()}else if(spIn.length<spW.w.length){if(spW.w[spIn.length]===' ')spIn.push(' ');spIn.push(c)}else{const a=spEl('spans');a.classList.remove('full');void a.offsetWidth;a.classList.add('full');return}spRender();return}
+  if(t.dataset.c!=null){const c=t.dataset.c;if(c==='⌫'){if(spIn.length<=spLock)return;spIn.pop();while(spIn.length>spLock&&spIn[spIn.length-1]===' ')spIn.pop()}else if(spIn.length<spW.w.length){if(spW.w[spIn.length]===' ')spIn.push(' ');spIn.push(c)}else{const a=spEl('spans');a.classList.remove('full');void a.offsetWidth;a.classList.add('full');return}spRender();return}
 });
 spEl('spans').addEventListener('click',e=>{const w=e.target.closest('[data-w]');if(w){const x=spW.w.split(' ')[+w.dataset.w];
     document.querySelectorAll('#spans .ws.on').forEach(b=>b.classList.remove('on'));w.classList.add('on');setTimeout(()=>w.classList.remove('on'),1200);say(x);return}
