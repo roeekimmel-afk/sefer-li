@@ -7,7 +7,6 @@
 <meta name="apple-mobile-web-app-title" content="ספר לי">
 <meta name="theme-color" content="#ff8a3d">
 <title>ספר לי – סיפורי ילדים</title>
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
 <script>document.documentElement.className="js"</script>
 <style>
@@ -153,7 +152,7 @@ h2.sec small{font-size:13px;color:var(--muted);font-weight:600}
 @media (min-width:700px){.grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}}
 
 /* ---------- no-JS static library ---------- */
-html:not(.js) #top,html:not(.js) #chips,html:not(.js) #view,html:not(.js) #reader,html:not(.js) #rset,html:not(.js) #toast,html:not(.js) #loading{display:none!important}
+html:not(.js) #top,html:not(.js) #chips,html:not(.js) #view,html:not(.js) #reader,html:not(.js) #rset,html:not(.js) #toast,html:not(.js) #learn,html:not(.js) #lpop,html:not(.js) #lcards,html:not(.js) #loading{display:none!important}
 html.js #static{display:none}
 #static{max-width:760px;margin:0 auto;padding:0 12px 40px}
 .xhead{margin:0 -12px 14px;padding:calc(var(--safe-t) + 22px) 18px 22px;color:#fff;text-align:center;
@@ -188,7 +187,43 @@ html.js #static{display:none}
 .xabout{background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:16px;margin:12px 0;line-height:1.7}
 .xabout h3{margin:0 0 4px}
 .xtip{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 14px}
+#learn{position:fixed;inset:0;z-index:45;background:var(--rbg);color:var(--rink);display:flex;flex-direction:column;padding:calc(var(--safe-t,0px) + 8px) 14px calc(env(safe-area-inset-bottom) + 12px)}
+#learn.hidden,#lpop.hidden,#lcards.hidden{display:none}
+#lbar{display:flex;align-items:center;gap:8px}
+#lbar .iconbtn{background:color-mix(in srgb,var(--rink) 8%,transparent);color:var(--rink)}
+#lstat{font-weight:800;font-size:15px;color:var(--rmuted)}
+#lprog{height:8px;border-radius:9px;background:var(--rline);margin:10px 2px 0;overflow:hidden}
+#lprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff8a3d,#ff5fa2,#7c5cff);transition:width .3s}
+#lcount{text-align:center;font-size:13px;color:var(--rmuted);margin-top:6px;font-weight:700}
+#lsent{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;overflow-y:auto;padding:10px 4px}
+#lheb{font-size:calc(var(--fs,21px)*1.45);line-height:1.9;font-weight:600}
+#lheb .w{display:inline-block;padding:0 3px;border-radius:8px;cursor:pointer}
+#lheb .w:active,#lheb .w.on{background:color-mix(in srgb,var(--accent) 25%,transparent)}
+#lheb .w.saved{border-bottom:3px dotted var(--accent)}
+#len{margin-top:18px;font-size:18px;color:var(--rmuted);direction:ltr;min-height:1.4em;max-width:600px}
+#len.blur{filter:blur(6px);cursor:pointer}
+#lhint{font-size:13px;color:var(--rmuted);margin-top:10px}
+#ltools{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+#ltools button,.lbtn{padding:12px 0;border-radius:16px;border:2px solid var(--rline);font-weight:800;font-size:15px;color:var(--rink)}
+#ltools button.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+#lnav{display:grid;grid-template-columns:1fr 2fr;gap:8px}
+#lnav button{padding:16px 0;border-radius:18px;font-weight:900;font-size:18px;border:2px solid var(--rline);color:var(--rink)}
+#lnav #lnext{background:linear-gradient(135deg,#ff8a3d,#ff5fa2);color:#fff;border:0}
+#lpop{position:fixed;left:0;right:0;bottom:0;z-index:48;background:var(--rbg);color:var(--rink);border-top:1px solid var(--rline);border-radius:24px 24px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.25);padding:18px 18px calc(env(safe-area-inset-bottom) + 18px);text-align:center}
+#lpop .h{font-size:40px;font-weight:800}
+#lpop .tr{direction:ltr;color:var(--rmuted);font-style:italic;margin:2px 0 8px}
+#lpop .en{direction:ltr;font-size:20px;font-weight:700;margin-bottom:14px}
+#lpop .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+#lcards{position:fixed;inset:0;z-index:47;background:var(--rbg);color:var(--rink);display:flex;flex-direction:column;padding:calc(var(--safe-t,0px) + 8px) 14px calc(env(safe-area-inset-bottom) + 14px)}
+#lcard{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer}
+#lcard .h{font-size:48px;font-weight:800}
+#lcard .ans{direction:ltr;margin-top:16px;font-size:22px;color:var(--rmuted)}
+#lcards .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#lcards .list{max-height:30vh;overflow:auto;font-size:15px;color:var(--rmuted);margin:8px 0;text-align:right}
+.confetti{position:fixed;z-index:60;font-size:28px;pointer-events:none;animation:cf 1.1s ease-out forwards}
+@keyframes cf{to{transform:translateY(-160px) rotate(200deg);opacity:0}}
 </style>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
 <div id="loading"><div><div class="e">📚</div><p>פותחים את ארון הספרים…</p></div></div>
@@ -212,6 +247,7 @@ html.js #static{display:none}
   <div id="rbar">
     <button class="iconbtn" id="rclose" aria-label="חזרה">→</button>
     <div class="sp"></div>
+    <button class="iconbtn" id="rlearn" aria-label="מצב לימוד">🎓</button>
     <button class="iconbtn" id="rfav" aria-label="מועדף">🤍</button>
     <button class="iconbtn" id="rsetbtn" aria-label="הגדרות קריאה">Aa</button>
     <div id="prog"></div>
@@ -227,6 +263,22 @@ html.js #static{display:none}
   <div class="seg"><button data-fs="-1">א-</button><button data-fs="0">א</button><button data-fs="1">א+</button></div>
   <div class="lbl">צבע רקע</div>
   <div class="seg"><button data-th="">☀️ יום</button><button data-th="sepia">📜 ספר</button><button data-th="night">🌙 לילה</button></div>
+</div>
+<div id="learn" class="hidden" dir="rtl">
+  <div id="lbar"><button class="iconbtn" id="lclose" aria-label="קריאה רגילה">✕</button><div id="lstat"></div><div class="sp" style="flex:1"></div>
+    <button class="iconbtn" id="lwordsbtn" aria-label="המילים שלי">📒</button></div>
+  <div id="lprog"><i></i></div><div id="lcount"></div>
+  <div id="lsent"><div id="lheb"></div><div id="len"></div><div id="lhint"></div></div>
+  <div id="ltools"><button id="lnq">אָ ניקוד</button><button id="lsay">🔊 שמע</button><button id="lslow">🐢 לאט</button><button id="ltr">🇬🇧 תרגום</button></div>
+  <div id="lnav"><button id="lprev">→</button><button id="lnext">הבא ←</button></div>
+</div>
+<div id="lpop" class="hidden" dir="rtl"><div class="h"></div><div class="tr"></div><div class="en"></div>
+  <div class="row"><button class="lbtn" id="lpsay">🔊</button><button class="lbtn" id="lpsave">⭐ שמור</button><button class="lbtn" id="lpx">סגור</button></div></div>
+<div id="lcards" class="hidden" dir="rtl">
+  <div id="lbar"><button class="iconbtn" id="lcclose">✕</button><div id="lcstat" style="font-weight:800"></div></div>
+  <div id="lcard"></div>
+  <div class="row"><button class="lbtn" id="lcno">🔁 עוד לא</button><button class="lbtn" id="lcyes">✅ ידעתי!</button></div>
+  <details><summary style="padding:8px;color:var(--rmuted)">כל המילים</summary><div class="list" id="lclist"></div></details>
 </div>
 <div id="toast"></div>
 
@@ -410,7 +462,7 @@ function search(q){
 }
 
 /* ---------- reader ---------- */
-let curStory=-1,saveT=null;
+let curStory=-1,saveT=null,CURPS=null;
 const R=$('#reader');
 function applyReader(){R.className=theme;R.style.setProperty('--fs',fsz+'px');
   document.querySelectorAll('#rset [data-th]').forEach(b=>b.classList.toggle('on',b.dataset.th==theme));
@@ -434,7 +486,8 @@ async function openStory(i){
     let ps=txt.split('\n');while(ps.length>1&&(norm(ps[0])==s.n||(book&&norm(ps[0])==norm(book.t))))ps.shift();
     let html=ps.map(p=>'<p>'+esc(p)+'</p>').join('');
     if(q.length>1){const re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g');html=html.replace(re,m=>'<mark>'+m+'</mark>')}
-    rt.innerHTML=html;
+    rt.innerHTML=html;CURPS=ps;
+    if(learnOn)startLearn(i,ps);
   } else rt.innerHTML=`<div class="nopdf"><div class="e">🖼️</div>הסיפור הזה הוא ספר מצויר.<br>לחצו על הכפתור למטה כדי לפתוח אותו עם כל התמונות.</div>`;
   // footer
   let f='';
@@ -459,7 +512,7 @@ function onScroll(){
   clearTimeout(saveT);saveT=setTimeout(()=>{if(curStory<0)return;prog[curStory]=Math.max(p>.97?1:p,prog[curStory]>=.98?1:0)||p;LS.set('prog',prog)},300);
 }
 R.addEventListener('scroll',onScroll,{passive:true});
-function closeReader(){R.classList.add('hidden');$('#rset').classList.add('hidden');document.body.style.overflow='';curStory=-1;
+function closeReader(){if(!$('#learn').classList.contains('hidden')){$('#learn').classList.add('hidden');$('#lpop').classList.add('hidden')}R.classList.add('hidden');$('#rset').classList.add('hidden');document.body.style.overflow='';curStory=-1;
   document.querySelector('meta[name=theme-color]').content='#ff8a3d'}
 
 /* ---------- routing ---------- */
@@ -509,6 +562,85 @@ $('#q').addEventListener('input',()=>{const v=$('#q').value.trim();$('#qx').clas
 $('#q').addEventListener('keydown',e=>{if(e.key=='Enter')$('#q').blur()});
 $('#qx').onclick=()=>{$('#q').value='';$('#qx').classList.add('hidden');home()};
 
+/* ---------- learn mode ---------- */
+R.append($('#learn'),$('#lpop'),$('#lcards'));
+let learnOn=LS.get('learn',false),nqOn=LS.get('nq',true),slow=LS.get('slow',false);
+let LW=LS.get('words',{}),XP=LS.get('xp',0),DAYS=LS.get('days',{d:'',n:0}),LPOS=LS.get('lpos',{});
+let lSents=[],lI=0,lStory=-1,lTok=null,lPop=null;
+const NQC={},TRC={};
+const lj=s=>{try{return JSON.parse(s)}catch(e){return null}};
+const plain=s=>s.replace(/[֑-ׇ]/g,'');
+const clean=w=>w.replace(/^[^א-תa-zA-Z0-9]+|[^א-תa-zA-Z0-9֑-ׇ]+$/g,'');
+function splitSents(ps){const out=[];for(const p of ps){const m=p.match(/[^.!?…]+[.!?…]*["'״”׳)]*\s*/g)||[p];
+  for(let s of m){s=s.trim();if(!s)continue;if(out.length&&(s.length<12||out[out.length-1].length<12)&&out[out.length-1].length+s.length<160&&out[out.length-1]!==null)out[out.length-1]+=' '+s;else out.push(s)}}return out}
+async function nikud(s){if(NQC[s])return NQC[s];
+  const r=await fetch('https://nakdan-2-0.loadbalancer.dicta.org.il/api',{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},
+    body:JSON.stringify({task:'nakdan',data:s,genre:'modern',addmorph:false,keepqq:false,nodageshdefmem:false,patachma:false,keepnikud:true})});
+  const j=await r.json();return NQC[s]=j.map(t=>t.sep?{s:t.word}:{p:t.word,v:(t.options&&t.options[0]||t.word).replace(/\|/g,'')})}
+async function trans(s){if(TRC[s])return TRC[s];
+  const r=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=iw&tl=en&dt=t&dt=rm&dt=bd&q='+encodeURIComponent(s));
+  const j=await r.json();let en='',rm='';for(const x of j[0]||[]){if(x[0])en+=x[0];else if(x[3])rm=x[3]}
+  const alt=j[1]?j[1].flatMap(d=>d[1]).filter((w,k,a)=>a.indexOf(w)==k&&w.toLowerCase()!=en.toLowerCase()).slice(0,3):[];
+  return TRC[s]={en,rm,alt}}
+let HEV=null;function heVoice(){if(HEV)return HEV;const v=speechSynthesis.getVoices();return HEV=v.find(x=>/^he|^iw/i.test(x.lang))||null}
+if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>{HEV=null};
+function say(t,rate){if(!window.speechSynthesis)return toast('אין קול במכשיר הזה');speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(plain(t));u.lang='he-IL';const v=heVoice();if(v)u.voice=v;u.rate=rate||(slow?.6:.9);speechSynthesis.speak(u)}
+function addXP(n){XP+=n;LS.set('xp',XP);const d=new Date().toDateString();
+  if(DAYS.d!==d){const y=new Date(Date.now()-864e5).toDateString();DAYS={d,n:DAYS.d===y?DAYS.n+1:1};LS.set('days',DAYS)}lStat()}
+function lStat(){$('#lstat').textContent=`🔥 ${DAYS.n||0}  ⭐ ${XP}  📒 ${Object.keys(LW).length}`}
+function confetti(){for(let k=0;k<14;k++){const e=document.createElement('div');e.className='confetti';e.textContent='🎉⭐✨💛🌟'[k%5];
+  e.style.left=(10+Math.random()*80)+'vw';e.style.top=(55+Math.random()*30)+'vh';e.style.animationDelay=(Math.random()*.3)+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),1500)}}
+function startLearn(i,ps){lStory=i;lSents=splitSents(ps);lI=Math.min(LPOS[i]||0,lSents.length-1);
+  $('#learn').classList.remove('hidden');$('#lnq').classList.toggle('on',nqOn);$('#lslow').classList.toggle('on',slow);lStat();showSent()}
+function stopLearn(){learnOn=false;LS.set('learn',false);$('#learn').classList.add('hidden');$('#lpop').classList.add('hidden');speechSynthesis&&speechSynthesis.cancel()}
+function renderTok(tok){$('#lheb').innerHTML=tok.map((t,k)=>t.s!=null?esc(t.s):`<span class="w${LW[clean(t.p)]?' saved':''}" data-k="${k}">${esc(nqOn?t.v:t.p)}</span>`).join('')}
+async function showSent(){const s=lSents[lI];if(s==null)return;const my=lI;$('#lpop').classList.add('hidden');
+  LPOS[lStory]=lI;LS.set('lpos',LPOS);
+  $('#lprog i').style.width=((lI+1)/lSents.length*100)+'%';$('#lcount').textContent=`משפט ${lI+1} מתוך ${lSents.length}`;
+  $('#lprev').style.visibility=lI?'visible':'hidden';$('#lnext').textContent=lI==lSents.length-1?'סיימתי! 🎉':'הבא ←';
+  lTok=s.split(/(\s+)/).map(w=>/^\s+$/.test(w)?{s:w}:{p:w,v:w}).filter(t=>t.s||t.p);renderTok(lTok);
+  $('#len').textContent='🇬🇧 נסו להבין לבד – ואז לחצו כאן לתרגום';$('#len').className='blur';$('#len').style.filter='none';$('#lhint').textContent='👆 לחצו על מילה כדי לראות מה היא אומרת';
+  if(nqOn){try{const t=await nikud(s);if(my!==lI)return;lTok=t;renderTok(t)}catch(e){toast('ניקוד דורש אינטרנט')}}
+  if(lSents[lI+1]&&nqOn)nikud(lSents[lI+1]).catch(()=>{});
+}
+async function showTr(){const s=lSents[lI],my=lI;const L=$('#len');L.className='';L.textContent='⏳';
+  try{const t=await trans(s);if(my!==lI)return;L.textContent=t.en}catch(e){L.textContent='התרגום דורש אינטרנט'}}
+async function wordPop(k){const t=lTok[k];if(!t||!t.p)return;const w=clean(t.p);if(!w)return;
+  document.querySelectorAll('#lheb .w.on').forEach(e=>e.classList.remove('on'));const el=document.querySelector(`#lheb .w[data-k="${k}"]`);el&&el.classList.add('on');
+  lPop={w,v:clean(t.v)||w};const P=$('#lpop');P.classList.remove('hidden');P.querySelector('.h').textContent=lPop.v;P.querySelector('.tr').textContent='';P.querySelector('.en').textContent='⏳';
+  $('#lpsave').textContent=LW[w]?'✓ שמור':'⭐ שמור';say(lPop.v);
+  try{const r=await trans(w);if(lPop.w!==w)return;lPop.en=r.en;P.querySelector('.tr').textContent=r.rm?'['+r.rm+']':'';
+    P.querySelector('.en').textContent=r.en+(r.alt.length?'  ·  '+r.alt.join(', '):'')}catch(e){P.querySelector('.en').textContent='התרגום דורש אינטרנט'}}
+$('#lheb').addEventListener('click',e=>{const w=e.target.closest('.w');if(w)wordPop(+w.dataset.k)});
+$('#learn').addEventListener('click',e=>{if(!e.target.closest('.w'))$('#lpx').click()});
+$('#len').onclick=()=>{if($('#len').className=='blur')showTr()};
+$('#ltr').onclick=showTr;
+$('#lsay').onclick=()=>say(lTok?lTok.map(t=>t.s!=null?t.s:t.v).join(''):lSents[lI]);
+$('#lslow').onclick=()=>{slow=!slow;LS.set('slow',slow);$('#lslow').classList.toggle('on',slow);$('#lsay').click()};
+$('#lnq').onclick=()=>{nqOn=!nqOn;LS.set('nq',nqOn);$('#lnq').classList.toggle('on',nqOn);showSent()};
+$('#lprev').onclick=()=>{if(lI>0){lI--;showSent()}};
+$('#lnext').onclick=()=>{if(lI<lSents.length-1){lI++;addXP(1);showSent()}else{addXP(10);confetti();toast('🎉 כל הכבוד! סיימתם את הסיפור! +10⭐');prog[lStory]=1;LS.set('prog',prog);LPOS[lStory]=0;LS.set('lpos',LPOS);stopLearn()}};
+$('#lclose').onclick=stopLearn;
+$('#lpx').onclick=()=>{$('#lpop').classList.add('hidden');document.querySelectorAll('#lheb .w.on').forEach(e=>e.classList.remove('on'))};
+$('#lpsay').onclick=()=>lPop&&say(lPop.v,.6);
+$('#lpsave').onclick=()=>{if(!lPop)return;const w=lPop.w;if(LW[w]){delete LW[w];toast('הוסר מהמילים שלי')}else{LW[w]={v:lPop.v,en:lPop.en||'',b:0,s:lStory};addXP(2);toast('⭐ נשמר במילים שלי!')}
+  LS.set('words',LW);$('#lpsave').textContent=LW[w]?'✓ שמור':'⭐ שמור';renderTok(lTok);lStat()};
+let sx=null;$('#lsent').addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
+$('#lsent').addEventListener('touchend',e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>60)(dx>0?$('#lnext'):$('#lprev')).click()});
+/* flashcards */
+let cq=[],cw=null;
+function nextCard(){const ks=Object.keys(LW);$('#lcstat').textContent=`📒 ${ks.length} מילים  ⭐ ${XP}`;
+  $('#lclist').innerHTML=ks.map(k=>`<div>${esc(LW[k].v)} – <span dir="ltr">${esc(LW[k].en)}</span></div>`).join('')||'עוד אין מילים';
+  if(!ks.length){$('#lcard').innerHTML='<div style="font-size:20px">אין עדיין מילים 📒<br><br>בזמן הלימוד לחצו על מילה ואז ⭐ שמור</div>';cw=null;return}
+  if(!cq.length)cq=ks.sort((a,b)=>(LW[a].b-LW[b].b)||Math.random()-.5).slice(0,10);
+  cw=cq.shift();$('#lcard').innerHTML=`<div class="h">${esc(LW[cw].v)}</div><div class="ans">👆 נסו להיזכר ולחצו</div>`;$('#lcard').dataset.open=''}
+$('#lcard').onclick=()=>{if(!cw)return;if(!$('#lcard').dataset.open){$('#lcard').dataset.open=1;$('#lcard .ans').textContent=LW[cw].en||'?';say(LW[cw].v)}};
+$('#lcyes').onclick=()=>{if(!cw)return;LW[cw].b++;LS.set('words',LW);addXP(1);nextCard()};
+$('#lcno').onclick=()=>{if(!cw)return;LW[cw].b=0;LS.set('words',LW);cq.push(cw);nextCard()};
+$('#lwordsbtn').onclick=()=>{cq=[];$('#lcards').classList.remove('hidden');nextCard()};
+$('#lcclose').onclick=()=>$('#lcards').classList.add('hidden');
+$('#rlearn').onclick=()=>{if(!CURPS||curStory<0)return toast('אין טקסט לסיפור הזה');learnOn=true;LS.set('learn',true);startLearn(curStory,CURPS)};
 /* ---------- boot ---------- */
 let ALPHA=[];
 (async()=>{
