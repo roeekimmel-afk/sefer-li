@@ -928,13 +928,13 @@ function spCheck(){if(!SP||!spW)return;if(spDone)return SP.fromLearn?spBack():sp
     const m=spMarks().slice(0,e);
     if(m.every(x=>x==='ok')){spLock=e;spRender();spEl('spfb').innerHTML=`✅ נכון! המשיכו <small class="en" dir="ltr" style="display:inline">Correct! Keep going</small>`;return}
     spFirst=false;spFix=m;spFixK=-1;spRender(spFix);spEl('spcheck').classList.add('hidden');
-    spEl('spfb').innerHTML=`❌ כמעט! לחצו על אות אדומה כדי לתקן <small class="en" dir="ltr" style="display:block">Almost! Tap a red letter to fix it</small><div class="right">✔️ <span>${esc(spW.w.slice(0,e))}</span></div>`;spFixKb();spSayPre(e);return}
+    spEl('spfb').innerHTML=`❌ כמעט! לחצו על אות אדומה כדי לתקן <small class="en" dir="ltr" style="display:block">Almost! Tap a red letter to fix it</small><div class="right">✔️ <span>${esc(spW.w.slice(0,e))}</span></div>`;spFixKb();if(!spW.sent)spSayPre(e);return}
   if(norm(spTxt())===norm(spW.w)){spRender(spW.w.split('').map(()=>'ok'));return spResult(true)}
   const m=spMarks();
   if(!spTiles){spFirst=false;if(!spW.sent)SB[spW.w]=0;spFix=m.slice(0,spW.w.length);spFixK=-1;spRender(spFix);spEl('spcheck').classList.add('hidden');
-    spEl('spfb').innerHTML=`❌ כמעט! לחצו על אות אדומה כדי לתקן <small class="en" dir="ltr" style="display:block">Almost! Tap a red letter to fix it</small><div class="right">✔️ <span>${esc(spW.w)}</span></div>`;spFixKb();say(spW.w,.6);return}
+    spEl('spfb').innerHTML=`❌ כמעט! לחצו על אות אדומה כדי לתקן <small class="en" dir="ltr" style="display:block">Almost! Tap a red letter to fix it</small><div class="right">✔️ <span>${esc(spW.w)}</span></div>`;spFixKb();if(!spW.sent)say(spW.w,.6);return}
   spRender(m);if(!spFirst){return spResult(false)}
-  spFirst=false;SB[spW.w]=0;spEl('spfb').innerHTML=`❌ כמעט! נסו שוב <small class="en" dir="ltr" style="display:inline">Almost! Try again</small>`;say(spW.w,.6)}
+  spFirst=false;SB[spW.w]=0;spEl('spfb').innerHTML=`❌ כמעט! נסו שוב <small class="en" dir="ltr" style="display:inline">Almost! Try again</small>`;if(!spW.sent)say(spW.w,.6)}
 function spFixKb(){const k=spFixK;if(k<0){spEl('spkb').innerHTML=`<div class="fixmsg">👆 לחצו על אות אדומה<small class="en" dir="ltr">Tap a red letter to change it</small></div>`;return}
   const tgt=spW.w[k],o=[tgt];for(const c of [spIn[k],LOOK[tgt],TRICK[tgt]])if(c&&!o.some(x=>norm(x)===norm(c)))o.push(c);
   const all=KB.join('').replace(/[ךםןףץ]/g,'');while(o.length<4){const c=all[Math.random()*all.length|0];if(!o.some(x=>norm(x)===norm(c)))o.push(c)}
