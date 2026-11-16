@@ -814,7 +814,7 @@ async function spNext(){if(SP.n&&SP.i>=SP.n)return spEnd();
   const sayB=`<button class="spsay" data-say>🔊</button>`;
   spEl('spans').classList.remove('sm');
   if(g==='sent'){const w=SP.fixed?{w:SP.fixed,en:'',s:-1,sent:1}:await spSentPick();
-    if(w){spW=w;spEl('spans').classList.add('sm');spEl('spq').innerHTML=head+`<div class="sen">…</div><div><button class="spsay" data-say>🔊</button> <button class="spsay" data-slow>🐢</button></div><div class="wtip">👇 לחצו על 🔊 מעל מילה כדי לשמוע רק אותה<small class="en" dir="ltr">Tap 🔊 above a word to hear just that word</small>✓ אפשר לבדוק אחרי כל מילה<small class="en" dir="ltr">Press ✓ Check after any word to check it</small></div>`;
+    if(w){spW=w;spEl('spans').classList.add('sm');spEl('spq').innerHTML=head+`<div class="sen">…</div><div><button class="spsay" data-say>🔊</button> <button class="spsay" data-slow>🐢</button></div><div class="wtip">👇 לחצו על 🔊 מעל מילה כדי לשמוע רק אותה<small class="en" dir="ltr">Tap 🔊 above a word to hear just that word</small>✓ כל מילה נבדקת אוטומטית כשמסיימים אותה<small class="en" dir="ltr">Each word is checked automatically when you finish it</small></div>`;
       {const e=document.querySelector('#spq .sen'),W=spW;trans(W.w).then(t=>{W.en=t.en||'';e.textContent=W.en}).catch(()=>{e.textContent=''})}
       spKb();spRender();say(spW.w);return}
     SP.g='hear'}
@@ -846,7 +846,7 @@ function spResult(ok){if(spDone)return;spDone=true;spEl('sphint').disabled=spEl(
   else{if(!spW.sent)SB[spW.w]=0;if(!SP.miss.some(m=>m.w===spW.w))SP.miss.push(spW);spEl('spfb').innerHTML=`💪 זאת התשובה <small class="en" dir="ltr" style="display:inline">Here's the answer</small>`}
   LS.set('spell',SB);spStat();spReveal();SP.i++;
   const b=spEl('spcheck');b.classList.remove('hidden');b.innerHTML=SP.fromLearn?'↩ חזרה לסיפור<small class="en">Back to the story</small>':'הבא ←<small class="en">Next</small>';b.dataset.next=1}
-function spCheck(){if(spDone)return SP.fromLearn?spBack():spNext();if(!spIn.length)return;
+function spCheck(){if(!SP||!spW)return;if(spDone)return SP.fromLearn?spBack():spNext();if(!spIn.length)return;
   if(spW.sent&&spIn.length<spW.w.length){let e=-1;for(let k=0;k<=spIn.length;k++)if(spW.w[k]===' ')e=k;
     if(e<=spLock)return toast('סיימו להקליד מילה ואז בדקו · Finish a word, then check');
     const m=spMarks().slice(0,e);
@@ -897,7 +897,7 @@ spEl('spell').addEventListener('click',e=>{const t=e.target.closest('button');if
   if(t.dataset.t!=null){const k=+t.dataset.t;if(spTiles[k].u||spIn.length>=spW.w.length)return;spTiles[k].u=1;spIn.push(k);spKb();spRender();return}
   if(t.dataset.c!=null&&spCh){const ok=t.dataset.c===spCh.c;t.style.background=ok?'#d9f7df':'#ffe0e0';spEl('spq').querySelector('.word b').textContent=spCh.c;
     if(!ok)spFirst=false;spResult(ok);return}
-  if(t.dataset.c!=null){const c=t.dataset.c;if(c==='⌫'){if(spIn.length<=spLock)return;spIn.pop();while(spIn.length>spLock&&spIn[spIn.length-1]===' ')spIn.pop()}else if(spIn.length<spW.w.length){if(spW.w[spIn.length]===' ')spIn.push(' ');spIn.push(c)}else{const a=spEl('spans');a.classList.remove('full');void a.offsetWidth;a.classList.add('full');return}spRender();return}
+  if(t.dataset.c!=null){const c=t.dataset.c;if(c==='⌫'){if(spIn.length<=spLock)return;spIn.pop();while(spIn.length>spLock&&spIn[spIn.length-1]===' ')spIn.pop()}else if(spIn.length<spW.w.length){if(spW.w[spIn.length]===' ')spIn.push(' ');spIn.push(c);spRender();if(spW.sent&&(spIn.length===spW.w.length||spW.w[spIn.length]===' '))spCheck();return}else{const a=spEl('spans');a.classList.remove('full');void a.offsetWidth;a.classList.add('full');return}spRender();return}
 });
 spEl('spans').addEventListener('click',e=>{const w=e.target.closest('[data-w]');if(w){const x=spW.w.split(' ')[+w.dataset.w];
     document.querySelectorAll('#spans .ws.on').forEach(b=>b.classList.remove('on'));w.classList.add('on');setTimeout(()=>w.classList.remove('on'),1200);say(x);return}
