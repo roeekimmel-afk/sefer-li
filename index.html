@@ -289,6 +289,15 @@ h2.sec .bi .en{font-size:12.5px;color:var(--muted)}
 #spfb .nk.s{font-size:22px;line-height:1.5}
 #ltools #ltype{grid-column:1/-1}
 
+#spans .wd{flex-direction:column;align-items:center;gap:3px}
+#spans .ls{display:flex;gap:inherit;font-weight:inherit}
+#spans.sm .ls{gap:3px}
+#spans .ws{width:100%;min-width:34px;padding:3px 6px;border-radius:10px;border:2px solid #ffb37a;background:#fff4ea;font-size:15px;line-height:1.2;cursor:pointer}
+#spans .ws.on{background:#ff9f43;border-color:#ff9f43;transform:scale(1.06)}
+#spq .wtip{font-size:13px;font-weight:700;color:#d9731f}
+#spq .wtip small{display:block;font-weight:600}
+#spans.sm{row-gap:10px}
+
 </style>
 <link rel="apple-touch-icon" href="apple-touch-icon.png"></head>
 <body>
@@ -802,7 +811,7 @@ async function spNext(){if(SP.n&&SP.i>=SP.n)return spEnd();
   const sayB=`<button class="spsay" data-say>🔊</button>`;
   spEl('spans').classList.remove('sm');
   if(g==='sent'){const w=SP.fixed?{w:SP.fixed,en:'',s:-1,sent:1}:await spSentPick();
-    if(w){spW=w;spEl('spans').classList.add('sm');spEl('spq').innerHTML=head+`<div class="sen">…</div><div><button class="spsay" data-say>🔊</button> <button class="spsay" data-slow>🐢</button></div>`;
+    if(w){spW=w;spEl('spans').classList.add('sm');spEl('spq').innerHTML=head+`<div class="sen">…</div><div><button class="spsay" data-say>🔊</button> <button class="spsay" data-slow>🐢</button></div><div class="wtip">👇 לחצו על 🔊 מעל מילה כדי לשמוע רק אותה<small class="en" dir="ltr">Tap 🔊 above a word to hear just that word</small></div>`;
       {const e=document.querySelector('#spq .sen'),W=spW;trans(W.w).then(t=>{W.en=t.en||'';e.textContent=W.en}).catch(()=>{e.textContent=''})}
       spKb();spRender();say(spW.w);return}
     SP.g='hear'}
@@ -821,9 +830,9 @@ function spRe(w){return new RegExp('(^|[^א-ת])[ובלכמהש]{0,2}'+w+'(?![א
 function spSent(t,w){const ss=splitSents(t.split('\n'));const re=spRe(w);const c=ss.map(s=>s.replace(/[֑-ׇ]/g,'')).filter(s=>re.test(s)&&s.length<140);return c.sort((a,b)=>a.length-b.length)[0]||''}
 function spKb(){if(spTiles){spEl('spkb').innerHTML=`<div class="tiles">${spTiles.map((t,k)=>`<button class="k ${t.u?'used':''}" data-t="${k}">${t.c}</button>`).join('')}</div>`;return}
   spEl('spkb').innerHTML=KB.map(r=>`<div class="r">${[...r].map(c=>`<button class="k" data-c="${c}">${c}</button>`).join('')}</div>`).join('')+`<div class="r"><button class="k w" data-c="⌫">⌫</button></div>`}
-function spRender(marks){const n=Math.max(spW.w.length,spIn.length);let h='<b class="wd">';
-  for(let k=0;k<n;k++){if(spW.w[k]===' '){h+='</b><b class="wd">';continue}const c=spIn[k];const m=marks?marks[k]:'';h+=`<span class="${c!=null?'f':''} ${m}${spFix&&k===spFixK?' sel':''}" data-a="${k}">${c!=null?(spTiles?spTiles[c].c:c):(m==='miss'&&!spFix?spW.w[k]:'')}</span>`}
-  spEl('spans').innerHTML=h+'</b>'}
+function spRender(marks){const n=Math.max(spW.w.length,spIn.length);let j=0;const ws=()=>spW.sent?`<b class="wd"><button class="ws" data-w="${j++}">🔊</button><b class="ls">`:'<b class="wd"><b class="ls">';let h=ws();
+  for(let k=0;k<n;k++){if(spW.w[k]===' '){h+='</b></b>'+ws();continue}const c=spIn[k];const m=marks?marks[k]:'';h+=`<span class="${c!=null?'f':''} ${m}${spFix&&k===spFixK?' sel':''}" data-a="${k}">${c!=null?(spTiles?spTiles[c].c:c):(m==='miss'&&!spFix?spW.w[k]:'')}</span>`}
+  spEl('spans').innerHTML=h+'</b></b>'}
 const spTxt=()=>spIn.map(c=>spTiles?spTiles[c].c:c).join('');
 function spMarks(){const a=spIn.map(c=>spTiles?spTiles[c].c:c),b=spW.w;const out=[];for(let k=0;k<Math.max(a.length,b.length);k++)out.push(b[k]===' '?'ok':a[k]==null?'miss':norm(a[k])===norm(b[k]||'')?'ok':'bad');return out}
 async function spReveal(){spEl('spfb').innerHTML+=`<span class="nk${spW.sent?' s':''}">${esc(spW.w)}</span>`;
@@ -879,7 +888,9 @@ spEl('spell').addEventListener('click',e=>{const t=e.target.closest('button');if
     if(!ok)spFirst=false;spResult(ok);return}
   if(t.dataset.c!=null){const c=t.dataset.c;if(c==='⌫'){spIn.pop();while(spIn.length&&spIn[spIn.length-1]===' ')spIn.pop()}else if(spIn.length<spW.w.length){if(spW.w[spIn.length]===' ')spIn.push(' ');spIn.push(c)}else{const a=spEl('spans');a.classList.remove('full');void a.offsetWidth;a.classList.add('full');return}spRender();return}
 });
-spEl('spans').addEventListener('click',e=>{const s=e.target.closest('[data-a]');if(!s||spDone)return;const k=+s.dataset.a;
+spEl('spans').addEventListener('click',e=>{const w=e.target.closest('[data-w]');if(w){const x=spW.w.split(' ')[+w.dataset.w];
+    document.querySelectorAll('#spans .ws.on').forEach(b=>b.classList.remove('on'));w.classList.add('on');setTimeout(()=>w.classList.remove('on'),1200);say(x);return}
+  const s=e.target.closest('[data-a]');if(!s||spDone)return;const k=+s.dataset.a;
   if(spFix){if(spFix[k]!=='ok'){spFixK=k;spRender(spFix);spFixKb()}return}if(!spTiles)return;if(k>=spIn.length)return;
   spTiles[spIn[k]].u=0;spIn.splice(k,1);spKb();spRender()});
 
