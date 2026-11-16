@@ -191,6 +191,9 @@ html.js #static{display:none}
 #learn{position:fixed;inset:0;z-index:45;background:var(--rbg);color:var(--rink);display:flex;flex-direction:column;padding:calc(var(--safe-t,0px) + 8px) 14px calc(env(safe-area-inset-bottom) + 12px)}
 #learn.hidden,#lpop.hidden,#lcards.hidden{display:none}
 #lbar{display:flex;align-items:center;gap:8px}
+#lpdf{display:flex;align-items:center;gap:4px;height:42px;padding:0 12px;border-radius:14px;font-weight:800;font-size:14px;white-space:nowrap;text-decoration:none;color:var(--rink);background:color-mix(in srgb,var(--rink) 8%,transparent)}
+#lend{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;justify-content:center;padding:10px 0}
+#learn.done #lsent,#learn.done #ltools,#learn.done #lnav,#learn.done #lcount{display:none}
 #lbar .iconbtn{background:color-mix(in srgb,var(--rink) 8%,transparent);color:var(--rink)}
 #lstat{font-weight:800;font-size:15px;color:var(--rmuted)}
 #lprog{height:8px;border-radius:9px;background:var(--rline);margin:10px 2px 0;overflow:hidden}
@@ -334,7 +337,7 @@ h2.sec .bi .en{font-size:12.5px;color:var(--muted)}
   <div id="rbar">
     <button class="iconbtn" id="rclose" aria-label="חזרה">→</button>
     <div class="sp"></div>
-    <button class="iconbtn" id="rlearn" aria-label="מצב לימוד">🎓</button>
+    <button class="iconbtn" id="rlearn" style="display:none" aria-label="מצב לימוד">🎓</button>
     <button class="iconbtn" id="rfav" aria-label="מועדף">🤍</button>
     <button class="iconbtn" id="rsetbtn" aria-label="הגדרות קריאה">Aa</button>
     <div id="prog"></div>
@@ -352,10 +355,11 @@ h2.sec .bi .en{font-size:12.5px;color:var(--muted)}
   <div class="seg"><button data-th="">☀️ יום</button><button data-th="sepia">📜 ספר</button><button data-th="night">🌙 לילה</button></div>
 </div>
 <div id="learn" class="hidden" dir="rtl">
-  <div id="lbar"><button class="iconbtn" id="lclose" aria-label="קריאה רגילה">✕</button><div id="lstat"></div><div class="sp" style="flex:1"></div>
+  <div id="lbar"><button class="iconbtn" id="lclose" aria-label="חזרה">✕</button><div id="lstat"></div><div class="sp" style="flex:1"></div>
+    <a id="lpdf" target="_blank" rel="noopener">🖼️ PDF</a><button class="iconbtn" id="lfav" aria-label="מועדף">🤍</button>
     <button class="iconbtn" id="lwordsbtn" aria-label="המילים שלי">📒</button></div>
   <div id="lprog"><i></i></div><div id="lcount"></div>
-  <div id="lsent"><div id="lheb"></div><div id="len"></div><div id="lhint"></div></div>
+  <div id="lend" class="hidden"></div><div id="lsent"><div id="lheb"></div><div id="len"></div><div id="lhint"></div></div>
   <div id="ltools"><button id="lnq">אָ ניקוד</button><button id="lsay">🔊 שמע</button><button id="lslow">🐢 לאט</button><button id="ltr">🇬🇧 תרגום</button><button id="ltype">✍️ הקלידו את המשפט · Type it</button></div>
   <div id="lnav"><button id="lprev">→</button><button id="lnext">הבא ←</button></div>
 </div>
@@ -597,8 +601,8 @@ async function openStory(i){
     let html=ps.map(p=>'<p>'+esc(p)+'</p>').join('');
     if(q.length>1){const re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g');html=html.replace(re,m=>'<mark>'+m+'</mark>')}
     rt.innerHTML=html;CURPS=ps;
-    if(learnOn)startLearn(i,ps);
-  } else rt.innerHTML=`<div class="nopdf"><div class="e">🖼️</div>הסיפור הזה הוא ספר מצויר.<br>לחצו על הכפתור למטה כדי לפתוח אותו עם כל התמונות.</div>`;
+    startLearn(i,ps);
+  } else {$('#learn').classList.add('hidden');CURPS=null;} if(!txt)rt.innerHTML=`<div class="nopdf"><div class="e">🖼️</div>הסיפור הזה הוא ספר מצויר.<br>לחצו על הכפתור למטה כדי לפתוח אותו עם כל התמונות.</div>`;
   // footer
   let f='';
   if(txt) f+=`<div class="theend">✨ סוף ✨</div>`;
@@ -608,7 +612,8 @@ async function openStory(i){
     f+=`<button class="rbtn" data-b="${s.b}">📚 לכל הפרקים של "${esc(book.t)}"</button>`;
   }
   f+=`<button class="rbtn" data-act="rand">🎲 עוד סיפור הפתעה</button>`;
-  $('#rfoot').innerHTML=f;
+  $('#rfoot').innerHTML=f;$('#lpdf').href=pdf;$('#lfav').textContent=favs.has(i)?'❤️':'🤍';
+  $('#lend').innerHTML=`<div class="theend">🎉 סיימתם את הסיפור! · You finished! 🎉</div><button class="rbtn" id="lagain">🔁 מההתחלה · Start over</button>`+f.replace(/<div class="theend">.*?<\/div>/,"");
   // remember
   recent=[i,...recent.filter(x=>x!==i)].slice(0,30);LS.set('recent',recent);
   const p=prog[i]||0;
@@ -728,9 +733,10 @@ function confetti(){for(let k=0;k<14;k++){const e=document.createElement('div');
   e.style.left=(10+Math.random()*80)+'vw';e.style.top=(55+Math.random()*30)+'vh';e.style.animationDelay=(Math.random()*.3)+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),1500)}}
 function startLearn(i,ps){lStory=i;lSents=splitSents(ps);lI=Math.min(LPOS[i]||0,lSents.length-1);
   $('#learn').classList.remove('hidden');$('#lnq').classList.toggle('on',nqOn);$('#lslow').classList.toggle('on',slow);lStat();showSent()}
+function learnDone(on){$('#learn').classList.toggle('done',on);$('#lend').classList.toggle('hidden',!on)}
 function stopLearn(){learnOn=false;LS.set('learn',false);$('#learn').classList.add('hidden');$('#lpop').classList.add('hidden');sayStop()}
 function renderTok(tok){$('#lheb').innerHTML=tok.map((t,k)=>t.s!=null?esc(t.s):`<span class="w${LW[clean(t.p)]?' saved':''}" data-k="${k}">${esc(nqOn?t.v:t.p)}</span>`).join('')}
-async function showSent(){const s=lSents[lI];if(s==null)return;sayStop();const my=lI;$('#lpop').classList.add('hidden');
+async function showSent(){const s=lSents[lI];if(s==null)return;learnDone(false);sayStop();const my=lI;$('#lpop').classList.add('hidden');
   LPOS[lStory]=lI;LS.set('lpos',LPOS);
   $('#lprog i').style.width=((lI+1)/lSents.length*100)+'%';$('#lcount').textContent=`משפט ${lI+1} מתוך ${lSents.length}`;
   $('#lprev').style.visibility=lI?'visible':'hidden';$('#lnext').textContent=lI==lSents.length-1?'סיימתי! 🎉':'הבא ←';
@@ -756,8 +762,10 @@ $('#ltype').onclick=()=>{sayStop();spDictate(lSents[lI])};
 $('#lslow').onclick=()=>{slow=!slow;LS.set('slow',slow);$('#lslow').classList.toggle('on',slow);sayStop();$('#lsay').click()};
 $('#lnq').onclick=()=>{nqOn=!nqOn;LS.set('nq',nqOn);$('#lnq').classList.toggle('on',nqOn);showSent()};
 $('#lprev').onclick=()=>{if(lI>0){lI--;showSent()}};
-$('#lnext').onclick=()=>{if(lI<lSents.length-1){lI++;addXP(1);showSent()}else{addXP(10);confetti();toast('🎉 כל הכבוד! סיימתם את הסיפור! +10⭐');prog[lStory]=1;LS.set('prog',prog);LPOS[lStory]=0;LS.set('lpos',LPOS);stopLearn()}};
-$('#lclose').onclick=stopLearn;
+$('#lnext').onclick=()=>{if(lI<lSents.length-1){lI++;addXP(1);showSent()}else{addXP(10);confetti();toast('🎉 כל הכבוד! סיימתם את הסיפור! +10⭐');prog[lStory]=1;LS.set('prog',prog);LPOS[lStory]=0;LS.set('lpos',LPOS);sayStop();learnDone(true)}};
+$('#lclose').onclick=()=>$('#rclose').click();
+$('#lfav').onclick=()=>{$('#rfav').click();$('#lfav').textContent=$('#rfav').textContent};
+$('#lend').addEventListener('click',e=>{if(e.target.closest('#lagain')){lI=0;showSent()}});
 $('#lpx').onclick=()=>{$('#lpop').classList.add('hidden');document.querySelectorAll('#lheb .w.on').forEach(e=>e.classList.remove('on'))};
 $('#lpsay').onclick=()=>lPop&&say(lPop.v,.6,$('#lpsay'));
 $('#lpsave').onclick=()=>{if(!lPop)return;const w=lPop.w;if(LW[w]){delete LW[w];toast('הוסר מהמילים שלי')}else{LW[w]={v:lPop.v,en:lPop.en||'',b:0,s:lStory};addXP(2);toast('⭐ נשמר במילים שלי!')}
