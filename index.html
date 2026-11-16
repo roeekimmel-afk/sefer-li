@@ -301,6 +301,15 @@ h2.sec .bi .en{font-size:12.5px;color:var(--muted)}
 
 #spq .wtip small{margin-bottom:3px}
 
+#spans .ws.ld{border-color:#d9d9d9;background:#f4f4f4;animation:spPulse 1s ease-in-out infinite}
+#spans .ws.er{border-color:#e07a7a;background:#fff0f0}
+#spans .ws.na{border-color:#ddd;background:#f6f6f6;opacity:.7}
+#spans .ws.rdy{background:#2ecc71;border-color:#2ecc71;animation:spPulse .8s ease-in-out infinite}
+@keyframes spPulse{50%{transform:scale(1.12)}}
+.spctx{display:none;margin:6px auto 0;max-width:340px;padding:6px 10px;border-radius:12px;background:#fff8e6;font-size:14px;line-height:1.35}
+.spctx.on{display:block}.spctx b{display:block;font-weight:600;margin-top:2px}.spctx small.en{display:block;opacity:.75}
+.spctx .spsay{margin:4px 0;font-size:14px}
+
 </style>
 <link rel="apple-touch-icon" href="apple-touch-icon.png"></head>
 <body>
@@ -698,18 +707,18 @@ function sayWS(text,rate){const S=window.speechSynthesis;if(!S||!window.SpeechSy
   const u=new SpeechSynthesisUtterance(text);u.lang='he-IL';const v=heVoice();if(v)u.voice=v;u.rate=rate;UTT=u;
   u.onend=()=>{if(UTT===u)sayUI('idle')};u.onerror=e=>{if(UTT!==u)return;sayUI('idle');if(e.error!=='interrupted'&&e.error!=='canceled')toast('🔇 '+(e.error||'שגיאת קול'),4000)};
   sayUI('play');if(S.speaking||S.pending){S.cancel();setTimeout(()=>S.speak(u),150)}else S.speak(u)}
-function say(t,rate,btn,keep){
+function say(t,rate,btn,keep,o){
   if(ABtn&&btn&&ABtn===btn){sayStop();return}   // second tap = stop
   sayStop();ABtn=btn||null;if(ABtn&&!ABtn.dataset.lbl)ABtn.dataset.lbl=ABtn.textContent;
   const slowNow=rate?rate<.8:slow,parts=ttsChunks(t,keep);if(!parts.length)return;
   if(!AU){AU=new Audio();AU.setAttribute('playsinline','');AU.preload='auto'}
   AQ=parts.slice();let started=false,failed=false;
-  const fail=()=>{if(failed)return;failed=true;AQ=[];AU.onended=AU.onerror=null;sayWS(plain(parts.join(' ')),slowNow?.6:.9)};
+  const fail=()=>{if(failed)return;failed=true;AQ=[];AU.onended=AU.onerror=null;if(o&&o.strict){sayUI('idle');ABtn=null;if(o.onFail)o.onFail();return}sayWS(plain(parts.join(' ')),slowNow?.6:.9)};
   const next=()=>{if(!AQ.length){sayUI('idle');ABtn=null;return}
     AU.src='https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=iw'+(slowNow?'&ttsspeed=0.3':'')+'&q='+encodeURIComponent(AQ.shift());
     AU.onended=next;AU.onerror=()=>{if(!started)fail();else next()};
     AU.onplaying=()=>{started=true;sayUI('play')};
-    const pr=AU.play();if(pr&&pr.catch)pr.catch(e=>{if(e&&e.name==='NotAllowedError'){toast('🔇 הדפדפן חסם את הקול – נסו שוב',4000);sayStop()}else fail()})};
+    const pr=AU.play();if(pr&&pr.catch)pr.catch(e=>{if(e&&e.name==='NotAllowedError'){if(o&&o.onBlock){failed=true;sayStop();o.onBlock();return}toast('🔇 הדפדפן חסם את הקול – נסו שוב',4000);sayStop()}else fail()})};
   sayUI('load');next();   // play() is called synchronously inside the tap -> allowed on iOS
   setTimeout(()=>{if(!started&&!failed&&ABtn===btn&&AU.paused)fail()},6000)}
 function addXP(n){XP+=n;LS.set('xp',XP);const d=new Date().toDateString();
@@ -842,7 +851,7 @@ async function spNext(){if(SP.n&&SP.i>=SP.n)return spEnd();
   const sayB=`<button class="spsay" data-say>🔊</button>`;
   spEl('spans').classList.remove('sm');
   if(g==='sent'){const w=SP.fixed?{w:SP.fixed,en:'',s:-1,sent:1}:await spSentPick();
-    if(w){spW=w;spEl('spans').classList.add('sm');spEl('spq').innerHTML=head+`<div class="sen">…</div><div><button class="spsay" data-say>🔊</button> <button class="spsay" data-slow>🐢</button></div><div class="wtip">👇 לחצו על 🔊 מעל מילה כדי לשמוע רק אותה<small class="en" dir="ltr">Tap 🔊 above a word to hear just that word</small>✓ כל מילה נבדקת אוטומטית כשמסיימים אותה<small class="en" dir="ltr">Each word is checked automatically when you finish it</small></div>`;
+    if(w){spW=w;spEl('spans').classList.add('sm');spEl('spq').innerHTML=head+`<div class="sen">…</div><div><button class="spsay" data-say>🔊</button> <button class="spsay" data-slow>🐢</button></div><div class="wtip">👇 לחצו על 🔊 מעל מילה כדי לשמוע רק אותה<small class="en" dir="ltr">Tap 🔊 above a word to hear just that word</small>✓ כל מילה נבדקת אוטומטית כשמסיימים אותה<small class="en" dir="ltr">Each word is checked automatically when you finish it</small></div><div id="spctx" class="spctx"></div>`;
       {const e=document.querySelector('#spq .sen'),W=spW;trans(W.w).then(t=>{W.en=t.en||'';e.textContent=W.en}).catch(()=>{e.textContent=''})}
       spCtx(spW,SP.fixed&&SP.src);spKb();spRender();say(spW.w);return}
     SP.g='hear'}
@@ -863,16 +872,38 @@ function spWv(toks,words){const vw=[];for(const t of toks){if(t.p==null)continue
   for(const w of words){let f=-1;for(let d=0;d<3&&j+d<vw.length;d++)if(key(vw[j+d])===key(w)){f=j+d;break}
     if(f>=0){out.push(vw[f]);j=f+1}else out.push(null)}
   return out}
-function spCtx(W,src){W.nv=null;const words=W.w.split(' ');
-  const go=s=>nikud(s).then(t=>{const r=spWv(t,words);if(r.some(x=>x))W.nv=r;return r});
-  return go(src||W.w).then(r=>src&&r.some(x=>!x)?go(W.w).then(r2=>{W.nv=r.map((x,k)=>x||r2[k]);return W.nv}):r).catch(()=>{})}
+let SPCTX_TO=8000;
+function spCtx(W,src){W.nv=null;W.ns='wait';W.src=src;W.msg='';const words=W.w.split(' '),tk=W.tk=(W.tk||0)+1;spWsUpd();
+  const TO=p=>Promise.race([p,new Promise((_,j)=>setTimeout(()=>j(new Error('timeout')),SPCTX_TO))]);
+  const go=s=>TO(nikud(s)).then(t=>spWv(t,words));
+  return go(src||W.w).then(r=>src&&r.some(x=>!x)?go(W.w).then(r2=>r.map((x,k)=>x||r2[k]),()=>r):r)
+    .then(r=>{if(W.tk!==tk)return;if(!r.some(x=>x))throw new Error('noalign');W.nv=r;W.ns='ok'},e=>{if(W.tk!==tk)return;W.ns='fail'}).then(()=>{if(W.tk===tk)spCtxDone(W)})}
+function spCtxDone(W){if(spW!==W)return;const k=W.want;W.want=null;
+  if(k!=null&&W.ns==='ok'){if(!W.nv[k])W.msg='na';else if(Date.now()-W.wantT<6000){W.msg='';spSayW(k)}else W.rdy=k}
+  spWsUpd()}
+function spSayW(k){const W=spW;W.rdy=null;W.msg='';spWsUpd();{const b=document.querySelector(`#spans .ws[data-w="${k}"]`);if(b){b.classList.add('on');setTimeout(()=>b.classList.remove('on'),1200)}}
+  say(W.nv[k],undefined,undefined,1,{strict:1,onBlock:()=>{if(spW!==W)return;W.rdy=k;spWsUpd()},onFail:()=>{if(spW!==W)return;W.msg='pf';spWsUpd()}})}
+function spWsUpd(){const W=spW;if(!W||!W.sent)return;
+  document.querySelectorAll('#spans .ws').forEach(b=>{const k=+b.dataset.w,na=W.ns==='ok'&&!W.nv[k];
+    b.className='ws'+(W.ns==='wait'?' ld':W.ns==='fail'?' er':na?' na':'')+(W.want===k||W.rdy===k?' on':'')+(W.rdy===k?' rdy':'');
+    b.textContent=W.ns==='wait'?'⏳':W.ns==='fail'?'↻':na?'🔇':'🔊'});
+  const e=document.getElementById('spctx');if(!e)return;const en=t=>`<small class="en" dir="ltr">${t}</small>`;
+  e.innerHTML=W.ns==='wait'?`⏳ מכינים הגייה נכונה למילים…${en('Preparing the correct pronunciation of each word…')}`+(W.want!=null?`<b>המילה תושמע מיד כשתהיה מוכנה</b>${en('The word will play as soon as it is ready')}`:'')
+    :W.ns==='fail'?`⚠️ לא הצלחנו להכין הגייה למילים בודדות.${en('Couldn’t prepare single-word pronunciation.')} <button class="spsay" data-ctxretry>↻ נסו שוב<small class="en">Retry</small></button>${en('The full-sentence 🔊 still works.')}`
+    :W.rdy!=null?`✅ מוכן! לחצו שוב על 🔊 של המילה${en('Ready! Tap the word’s 🔊 again')}`
+    :W.msg==='na'?`🔇 אין הגייה בטוחה למילה הזו לבד – האזינו למשפט המלא 🔊${en('No reliable pronunciation for this word alone – listen to the full sentence 🔊')}`
+    :W.msg==='pf'?`🔇 לא הצלחנו להשמיע את המילה – לחצו שוב${en('Couldn’t play the word – tap again')}`:'';
+  e.className='spctx'+(e.innerHTML?' on':'')}
+function spSayPre(e){const p=spW.w.slice(0,e);if(!spW.sent)return say(p,.6);const n=p.split(' ').filter(Boolean).length;
+  if(spW.ns==='ok'&&spW.nv.slice(0,n).every(x=>x))return say(spW.nv.slice(0,n).join(' '),.6,undefined,1);
+  if(n>=2)say(p,.6)}
 function spRe(w){return new RegExp('(^|[^א-ת])[ובלכמהש]{0,2}'+w+'(?![א-ת])')}
 function spSent(t,w){const ss=splitSents(t.split('\n'));const re=spRe(w);const c=ss.map(s=>s.replace(/[֑-ׇ]/g,'')).filter(s=>re.test(s)&&s.length<140);return c.sort((a,b)=>a.length-b.length)[0]||''}
 function spKb(){if(spTiles){spEl('spkb').innerHTML=`<div class="tiles">${spTiles.map((t,k)=>`<button class="k ${t.u?'used':''}" data-t="${k}">${t.c}</button>`).join('')}</div>`;return}
   spEl('spkb').innerHTML=KB.map((r,i)=>`<div class="r">${[...r].map(c=>`<button class="k" data-c="${c}">${c}</button>`).join('')}${i?'':'<button class="k w" data-c="⌫">⌫</button>'}</div>`).join('')}
 function spRender(marks){const n=Math.max(spW.w.length,spIn.length);let j=0;const ws=()=>spW.sent?`<b class="wd"><button class="ws" data-w="${j++}">🔊</button><b class="ls">`:'<b class="wd"><b class="ls">';let h=ws();
   for(let k=0;k<n;k++){if(spW.w[k]===' '){h+='</b></b>'+ws();continue}const c=spIn[k];const m=marks?marks[k]:k<spLock?'ok':'';h+=`<span class="${c!=null?'f':''} ${m}${spFix&&k===spFixK?' sel':''}" data-a="${k}">${c!=null?(spTiles?spTiles[c].c:c):(m==='miss'&&!spFix?spW.w[k]:'')}</span>`}
-  spEl('spans').innerHTML=h+'</b></b>'}
+  spEl('spans').innerHTML=h+'</b></b>';spWsUpd()}
 const spTxt=()=>spIn.map(c=>spTiles?spTiles[c].c:c).join('');
 function spMarks(){const a=spIn.map(c=>spTiles?spTiles[c].c:c),b=spW.w;const out=[];for(let k=0;k<Math.max(a.length,b.length);k++)out.push(b[k]===' '?'ok':a[k]==null?'miss':norm(a[k])===norm(b[k]||'')?'ok':'bad');return out}
 async function spReveal(){spEl('spfb').innerHTML+=`<span class="nk${spW.sent?' s':''}">${esc(spW.w)}</span>`;
@@ -889,7 +920,7 @@ function spCheck(){if(!SP||!spW)return;if(spDone)return SP.fromLearn?spBack():sp
     const m=spMarks().slice(0,e);
     if(m.every(x=>x==='ok')){spLock=e;spRender();spEl('spfb').innerHTML=`✅ נכון! המשיכו <small class="en" dir="ltr" style="display:inline">Correct! Keep going</small>`;return}
     spFirst=false;spFix=m;spFixK=-1;spRender(spFix);spEl('spcheck').classList.add('hidden');
-    spEl('spfb').innerHTML=`❌ כמעט! לחצו על אות אדומה כדי לתקן <small class="en" dir="ltr" style="display:block">Almost! Tap a red letter to fix it</small><div class="right">✔️ <span>${esc(spW.w.slice(0,e))}</span></div>`;spFixKb();say(spW.w.slice(0,e),.6);return}
+    spEl('spfb').innerHTML=`❌ כמעט! לחצו על אות אדומה כדי לתקן <small class="en" dir="ltr" style="display:block">Almost! Tap a red letter to fix it</small><div class="right">✔️ <span>${esc(spW.w.slice(0,e))}</span></div>`;spFixKb();spSayPre(e);return}
   if(norm(spTxt())===norm(spW.w)){spRender(spW.w.split('').map(()=>'ok'));return spResult(true)}
   const m=spMarks();
   if(!spTiles){spFirst=false;if(!spW.sent)SB[spW.w]=0;spFix=m.slice(0,spW.w.length);spFixK=-1;spRender(spFix);spEl('spcheck').classList.add('hidden');
@@ -937,10 +968,14 @@ spEl('spell').addEventListener('click',e=>{const t=e.target.closest('button');if
   if(t.dataset.c!=null){const c=t.dataset.c;if(c==='⌫'){if(spIn.length<=spLock)return;spIn.pop();while(spIn.length>spLock&&spIn[spIn.length-1]===' ')spIn.pop()}else if(spIn.length<spW.w.length){if(spW.w[spIn.length]===' ')spIn.push(' ');spIn.push(c);spRender();if(spW.sent&&(spIn.length===spW.w.length||spW.w[spIn.length]===' '))spCheck();return}else{const a=spEl('spans');a.classList.remove('full');void a.offsetWidth;a.classList.add('full');return}spRender();return}
 });
 spEl('spans').addEventListener('click',e=>{const w=e.target.closest('[data-w]');if(w){const x=spW.w.split(' ')[+w.dataset.w];
-    document.querySelectorAll('#spans .ws.on').forEach(b=>b.classList.remove('on'));w.classList.add('on');setTimeout(()=>w.classList.remove('on'),1200);const v=spW.nv&&spW.nv[+w.dataset.w];say(v||x,undefined,undefined,!!v);return}
+    const k=+w.dataset.w,W=spW;W.rdy=null;W.msg='';
+    if(W.ns==='ok'){if(W.nv[k])spSayW(k);else{sayStop();W.msg='na';spWsUpd()}return}
+    sayStop();W.want=k;W.wantT=Date.now();if(W.ns==='fail')spCtx(W,W.src);else spWsUpd();return}
   const s=e.target.closest('[data-a]');if(!s||spDone)return;const k=+s.dataset.a;
   if(spFix){if(spFix[k]!=='ok'){spFixK=k;spRender(spFix);spFixKb()}return}if(!spTiles)return;if(k>=spIn.length)return;
   spTiles[spIn[k]].u=0;spIn.splice(k,1);spKb();spRender()});
+
+spEl('spq').addEventListener('click',e=>{if(e.target.closest('[data-ctxretry]')&&spW&&spW.sent&&spW.ns==='fail'){sayStop();spCtx(spW,spW.src)}});
 
 /* ---------- boot ---------- */
 let ALPHA=[];
