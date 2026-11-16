@@ -2,6 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ספר לי">
@@ -323,7 +324,7 @@ function palFor(t){return PAL[hash(t+'x')%PAL.length]}
 function norm(s){return s.replace(/[\u0591-\u05C7]/g,'').replace(/["'״׳\-–.,!?:]/g,'').replace(/ך/g,'כ').replace(/ם/g,'מ').replace(/ן/g,'נ').replace(/ף/g,'פ').replace(/ץ/g,'צ').replace(/\s+/g,' ').trim()}
 function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function mins(w){if(!w)return '';const m=Math.max(1,Math.round(w/130));return m+' דק\'';}
-function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),1800)}
+function toast(t,ms){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),ms||1800)}
 
 function storyCard(i){
   const s=STORIES[i];const [a,b]=palFor(s.t);const p=prog[i];
@@ -512,7 +513,7 @@ function onScroll(){
   clearTimeout(saveT);saveT=setTimeout(()=>{if(curStory<0)return;prog[curStory]=Math.max(p>.97?1:p,prog[curStory]>=.98?1:0)||p;LS.set('prog',prog)},300);
 }
 R.addEventListener('scroll',onScroll,{passive:true});
-function closeReader(){if(!$('#learn').classList.contains('hidden')){$('#learn').classList.add('hidden');$('#lpop').classList.add('hidden')}R.classList.add('hidden');$('#rset').classList.add('hidden');document.body.style.overflow='';curStory=-1;
+function closeReader(){if(typeof sayStop==='function')sayStop();if(!$('#learn').classList.contains('hidden')){$('#learn').classList.add('hidden');$('#lpop').classList.add('hidden')}R.classList.add('hidden');$('#rset').classList.add('hidden');document.body.style.overflow='';curStory=-1;
   document.querySelector('meta[name=theme-color]').content='#ff8a3d'}
 
 /* ---------- routing ---------- */
@@ -584,19 +585,29 @@ async function trans(s){if(TRC[s])return TRC[s];
   return TRC[s]={en,rm,alt}}
 let HEV=null;function heVoice(){if(HEV)return HEV;const v=speechSynthesis.getVoices();return HEV=v.find(x=>/^he|^iw/i.test(x.lang))||null}
 if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>{HEV=null};
-let UTT=null,SIL=null;
-function unlockAudio(){try{if(navigator.audioSession&&navigator.audioSession.type!=='playback')navigator.audioSession.type='playback'}catch(e){}
-  if(!SIL){const n=800,b=new ArrayBuffer(44+n),d=new DataView(b),w=(o,t)=>{for(let k=0;k<t.length;k++)d.setUint8(o+k,t.charCodeAt(k))};
-    w(0,'RIFF');d.setUint32(4,36+n,true);w(8,'WAVEfmt ');d.setUint32(16,16,true);d.setUint16(20,1,true);d.setUint16(22,1,true);d.setUint32(24,8000,true);d.setUint32(28,8000,true);d.setUint16(32,1,true);d.setUint16(34,8,true);w(36,'data');d.setUint32(40,n,true);
-    for(let k=0;k<n;k++)d.setUint8(44+k,128);SIL=new Audio(URL.createObjectURL(new Blob([b],{type:'audio/wav'})));SIL.setAttribute('playsinline','')}
-  try{const pr=SIL.play();pr&&pr.catch(()=>{})}catch(e){}}
-function say(t,rate){const S=window.speechSynthesis;if(!S||!window.SpeechSynthesisUtterance)return toast('אין קול במכשיר הזה');
-  unlockAudio();
-  const u=new SpeechSynthesisUtterance(plain(t));u.lang='he-IL';const v=heVoice();if(v)u.voice=v;u.rate=rate||(slow?.6:.9);
-  let ok=false;u.onstart=()=>{ok=true};u.onerror=e=>{ok=true;if(e.error!=='interrupted'&&e.error!=='canceled')toast('🔇 '+(e.error||'שגיאת קול'))};
-  UTT=u;
-  const go=()=>{try{S.resume()}catch(e){}S.speak(u);setTimeout(()=>{if(!ok&&UTT===u)toast('🔇 לא שומעים? בדקו שהמתג בצד הטלפון לא על "שקט" ושהווליום פתוח')},3000)};
-  if(S.speaking||S.pending){S.cancel();setTimeout(go,150)}else go()}
+/* speech: 1) Google TTS mp3 via <audio> (plays with silent switch on, no voice install needed)  2) fallback Web Speech */
+const SAYV=4;let AU=null,AQ=[],ABtn=null,UTT=null;
+function ttsChunks(t){t=plain(t).replace(/\s+/g,' ').trim();const out=[];while(t.length>190){let k=-1;for(const r of [/[.!?״׃:;]\s/g,/[,،]\s/g,/\s/g]){r.lastIndex=0;let m;while((m=r.exec(t))&&m.index<190)k=m.index+1;if(k>20)break}if(k<1)k=190;out.push(t.slice(0,k).trim());t=t.slice(k).trim()}if(t)out.push(t);return out}
+function sayUI(state){if(!ABtn)return;ABtn.classList.toggle('on',state!=='idle');const L={idle:ABtn.dataset.lbl,load:'⏳ טוען…',play:'⏹ עצור'};ABtn.textContent=L[state]||ABtn.dataset.lbl}
+function sayStop(){AQ=[];if(AU){AU.onended=AU.onerror=null;try{AU.pause()}catch(e){}}try{speechSynthesis.cancel()}catch(e){}sayUI('idle');ABtn=null}
+function sayWS(text,rate){const S=window.speechSynthesis;if(!S||!window.SpeechSynthesisUtterance){sayUI('idle');return toast('🔇 אין חיבור לשרת הקול ואין קול עברי במכשיר',4000)}
+  const u=new SpeechSynthesisUtterance(text);u.lang='he-IL';const v=heVoice();if(v)u.voice=v;u.rate=rate;UTT=u;
+  u.onend=()=>{if(UTT===u)sayUI('idle')};u.onerror=e=>{if(UTT!==u)return;sayUI('idle');if(e.error!=='interrupted'&&e.error!=='canceled')toast('🔇 '+(e.error||'שגיאת קול'),4000)};
+  sayUI('play');if(S.speaking||S.pending){S.cancel();setTimeout(()=>S.speak(u),150)}else S.speak(u)}
+function say(t,rate,btn){
+  if(ABtn&&btn&&ABtn===btn){sayStop();return}   // second tap = stop
+  sayStop();ABtn=btn||null;if(ABtn&&!ABtn.dataset.lbl)ABtn.dataset.lbl=ABtn.textContent;
+  const slowNow=rate?rate<.8:slow,parts=ttsChunks(t);if(!parts.length)return;
+  if(!AU){AU=new Audio();AU.setAttribute('playsinline','');AU.preload='auto'}
+  AQ=parts.slice();let started=false,failed=false;
+  const fail=()=>{if(failed)return;failed=true;AQ=[];AU.onended=AU.onerror=null;sayWS(parts.join(' '),slowNow?.6:.9)};
+  const next=()=>{if(!AQ.length){sayUI('idle');ABtn=null;return}
+    AU.src='https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=iw'+(slowNow?'&ttsspeed=0.3':'')+'&q='+encodeURIComponent(AQ.shift());
+    AU.onended=next;AU.onerror=()=>{if(!started)fail();else next()};
+    AU.onplaying=()=>{started=true;sayUI('play')};
+    const pr=AU.play();if(pr&&pr.catch)pr.catch(e=>{if(e&&e.name==='NotAllowedError'){toast('🔇 הדפדפן חסם את הקול – נסו שוב',4000);sayStop()}else fail()})};
+  sayUI('load');next();   // play() is called synchronously inside the tap -> allowed on iOS
+  setTimeout(()=>{if(!started&&!failed&&ABtn===btn&&AU.paused)fail()},6000)}
 function addXP(n){XP+=n;LS.set('xp',XP);const d=new Date().toDateString();
   if(DAYS.d!==d){const y=new Date(Date.now()-864e5).toDateString();DAYS={d,n:DAYS.d===y?DAYS.n+1:1};LS.set('days',DAYS)}lStat()}
 function lStat(){$('#lstat').textContent=`🔥 ${DAYS.n||0}  ⭐ ${XP}  📒 ${Object.keys(LW).length}`}
@@ -604,9 +615,9 @@ function confetti(){for(let k=0;k<14;k++){const e=document.createElement('div');
   e.style.left=(10+Math.random()*80)+'vw';e.style.top=(55+Math.random()*30)+'vh';e.style.animationDelay=(Math.random()*.3)+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),1500)}}
 function startLearn(i,ps){lStory=i;lSents=splitSents(ps);lI=Math.min(LPOS[i]||0,lSents.length-1);
   $('#learn').classList.remove('hidden');$('#lnq').classList.toggle('on',nqOn);$('#lslow').classList.toggle('on',slow);lStat();showSent()}
-function stopLearn(){learnOn=false;LS.set('learn',false);$('#learn').classList.add('hidden');$('#lpop').classList.add('hidden');speechSynthesis&&speechSynthesis.cancel()}
+function stopLearn(){learnOn=false;LS.set('learn',false);$('#learn').classList.add('hidden');$('#lpop').classList.add('hidden');sayStop()}
 function renderTok(tok){$('#lheb').innerHTML=tok.map((t,k)=>t.s!=null?esc(t.s):`<span class="w${LW[clean(t.p)]?' saved':''}" data-k="${k}">${esc(nqOn?t.v:t.p)}</span>`).join('')}
-async function showSent(){const s=lSents[lI];if(s==null)return;const my=lI;$('#lpop').classList.add('hidden');
+async function showSent(){const s=lSents[lI];if(s==null)return;sayStop();const my=lI;$('#lpop').classList.add('hidden');
   LPOS[lStory]=lI;LS.set('lpos',LPOS);
   $('#lprog i').style.width=((lI+1)/lSents.length*100)+'%';$('#lcount').textContent=`משפט ${lI+1} מתוך ${lSents.length}`;
   $('#lprev').style.visibility=lI?'visible':'hidden';$('#lnext').textContent=lI==lSents.length-1?'סיימתי! 🎉':'הבא ←';
@@ -627,14 +638,14 @@ $('#lheb').addEventListener('click',e=>{const w=e.target.closest('.w');if(w)word
 $('#learn').addEventListener('click',e=>{if(!e.target.closest('.w'))$('#lpx').click()});
 $('#len').onclick=()=>{if($('#len').className=='blur')showTr()};
 $('#ltr').onclick=showTr;
-$('#lsay').onclick=()=>say(lTok?lTok.map(t=>t.s!=null?t.s:t.v).join(''):lSents[lI]);
-$('#lslow').onclick=()=>{slow=!slow;LS.set('slow',slow);$('#lslow').classList.toggle('on',slow);$('#lsay').click()};
+$('#lsay').onclick=e=>say(lTok?lTok.map(t=>t.s!=null?t.s:t.v).join(''):lSents[lI],0,$('#lsay'));
+$('#lslow').onclick=()=>{slow=!slow;LS.set('slow',slow);$('#lslow').classList.toggle('on',slow);sayStop();$('#lsay').click()};
 $('#lnq').onclick=()=>{nqOn=!nqOn;LS.set('nq',nqOn);$('#lnq').classList.toggle('on',nqOn);showSent()};
 $('#lprev').onclick=()=>{if(lI>0){lI--;showSent()}};
 $('#lnext').onclick=()=>{if(lI<lSents.length-1){lI++;addXP(1);showSent()}else{addXP(10);confetti();toast('🎉 כל הכבוד! סיימתם את הסיפור! +10⭐');prog[lStory]=1;LS.set('prog',prog);LPOS[lStory]=0;LS.set('lpos',LPOS);stopLearn()}};
 $('#lclose').onclick=stopLearn;
 $('#lpx').onclick=()=>{$('#lpop').classList.add('hidden');document.querySelectorAll('#lheb .w.on').forEach(e=>e.classList.remove('on'))};
-$('#lpsay').onclick=()=>lPop&&say(lPop.v,.6);
+$('#lpsay').onclick=()=>lPop&&say(lPop.v,.6,$('#lpsay'));
 $('#lpsave').onclick=()=>{if(!lPop)return;const w=lPop.w;if(LW[w]){delete LW[w];toast('הוסר מהמילים שלי')}else{LW[w]={v:lPop.v,en:lPop.en||'',b:0,s:lStory};addXP(2);toast('⭐ נשמר במילים שלי!')}
   LS.set('words',LW);$('#lpsave').textContent=LW[w]?'✓ שמור':'⭐ שמור';renderTok(lTok);lStat()};
 let sx=null;$('#lsent').addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
