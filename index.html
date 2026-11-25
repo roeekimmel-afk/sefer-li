@@ -830,7 +830,7 @@ function say(t,rate,btn,keep,o){
   AQ=parts.slice();let started=false,failed=false,ci=-1;
   const fail=()=>{if(failed)return;failed=true;AQ=[];AU.onended=AU.onerror=null;if(o&&o.strict){sayUI('idle');ABtn=null;if(o.onFail)o.onFail();return}sayWS(plain(parts.join(' ')),SPD*.9,o&&o.onEnd)};
   const next=()=>{if(!AQ.length){clearInterval(AWD);sayUI('idle');ABtn=null;hlStop();if(o&&o.onEnd)o.onEnd();return}
-    AU.__pt=performance.now();AU.src='https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=iw&q='+encodeURIComponent(AQ.shift());ci++;if(HL)HL.c=ci;
+    AU.__pt=performance.now();AU.src='https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=iw&q='+encodeURIComponent(AQ.shift());hlCal();ci++;if(HL)HL.c=ci;
     AU.defaultPlaybackRate=SPD;AU.playbackRate=SPD;try{AU.preservesPitch=AU.webkitPreservesPitch=true}catch(e){}
     AU.onended=next;AU.onerror=()=>{if(!started)fail();else next()};
     AU.onplaying=()=>{started=true;sayUI('play')};
@@ -846,12 +846,19 @@ let HL=null;
 function hlW(ch){return /[א-תa-zA-Z0-9]/.test(ch)?1:/[.!?…:;]/.test(ch)?5:/[,،]/.test(ch)?3:/\s/.test(ch)?.6:0}
 function hlInit(parts,h){hlStop();const S=parts.join(' '),norm1=x=>plain(x).replace(/\s+/g,' ').trim();let pos=0;const rg=[];
   h.words.forEach((w,k)=>{w=norm1(w||'').replace(/^[^א-תa-zA-Z0-9]+|[^א-תa-zA-Z0-9]+$/g,'');if(!w)return;const i=S.indexOf(w,pos);if(i<0)return;rg.push({k,a:i,b:i+w.length});pos=i+w.length});
-  let off=0;const ch=parts.map(p=>{const a=S.indexOf(p,off);const c={a,b:a+p.length,cum:[0]};let t=0;for(const x of p){t+=hlW(x);c.cum.push(t)}c.tot=t||1;off=c.b;return c});
-  HL={S,rg,ch,el:h.el,sc:h.sc,c:-1,on:null,raf:0};const loop=()=>{if(!HL)return;hlTick();HL.raf=requestAnimationFrame(loop)};HL.raf=requestAnimationFrame(loop)}
+  let off=0;const ch=parts.map(p=>{const a=S.indexOf(p,off);const c={a,b:a+p.length,cum:[0]};const e=p.replace(/[^א-תa-zA-Z0-9]+$/,'').length;let t=0,i=0;for(const x of p){if(i++<e)t+=hlW(x);c.cum.push(t)}c.tot=t||1;off=c.b;
+    const L=(p.match(/[א-תa-zA-Z0-9]/g)||[]).length,Sp=(p.match(/ /g)||[]).length,P=(p.slice(0,e).match(/[.,:;?!…]/g)||[]).length;c.dm=.4+.106*L+.098*Sp+.069*P;return c});   // dm: clip length model in media seconds, fitted on real Google TTS clips (±0.15s)
+  HL={S,rg,ch,el:h.el,sc:h.sc,c:-1,on:null,raf:0,mx:0};const loop=()=>{if(!HL)return;hlTick();HL.raf=requestAnimationFrame(loop)};HL.raf=requestAnimationFrame(loop)}
+/* iPhone Safari reports a wrong / changing duration for Google's mp3 (no Content-Length, no range support), so the clip length
+   comes from a fitted model, corrected by how long finished clips really took (HLCAL); AU.duration is only used once fully downloaded and plausible */
+let HLCAL=1,HLDBAD=0;   // HLDBAD: duration changed mid-clip once -> never trust it again this session
+const HLDBG=/hldbg/.test(location.search)?document.body.appendChild(Object.assign(document.createElement('div'),{style:'position:fixed;left:4px;bottom:4px;z-index:99999;background:#000c;color:#0f0;font:11px monospace;padding:4px;pointer-events:none;white-space:pre;direction:ltr'})):null;
+function hlCal(){if(!HL||HL.c<0)return;const c=HL.ch[HL.c];if(c&&HL.mx>.4){const r=HL.mx/c.dm;if(r>.5&&r<2)HLCAL=Math.max(.7,Math.min(1.4,HLCAL*.5+r*.5))}HL.mx=0}
 function hlTick(){if(!HL||HL.ws||!AU||HL.c<0)return;const c=HL.ch[HL.c];if(!c||AU.paused&&!AU.ended&&AU.currentTime===0)return;
-  let d=AU.readyState>=1?AU.duration:NaN;const len=c.b-c.a;if(!isFinite(d)||!d||d>len*.4+3)d=len*.085+.4;
-  const lead=.11,tail=Math.min(.3,d*.12),f=Math.max(0,Math.min(1,(AU.currentTime-lead)/Math.max(.1,d-lead-tail)));
-  const want=f*c.tot;let j=0;while(j<c.cum.length-1&&c.cum[j+1]<=want)j++;hlAt(c.a+j)}
+  const ct=AU.currentTime;if(ct>HL.mx)HL.mx=ct;const m=c.dm*HLCAL;let d=AU.duration;if(isFinite(d)&&d>0){if(c.d0==null)c.d0=d;else if(Math.abs(d-c.d0)>.03)HLDBAD=1}const use=!HLDBAD&&isFinite(d)&&d>0&&AU.networkState!==2&&d>m*.6&&d<m*1.6;if(!use)d=m;
+  const lead=.1,tail=Math.min(.3,d*.15),f=Math.max(0,Math.min(1,(ct-lead)/Math.max(.1,d-lead-tail)));
+  const want=f*c.tot;let j=0;while(j<c.cum.length-1&&c.cum[j+1]<=want)j++;hlAt(c.a+j);
+  if(HLDBG)HLDBG.textContent=`clip ${HL.c+1}/${HL.ch.length} ct ${ct.toFixed(2)}\ndur ${(+AU.duration).toFixed(2)} ns ${AU.networkState} rs ${AU.readyState}\nmodel ${m.toFixed(2)} cal ${HLCAL.toFixed(2)} using ${use?'dur':'model'} rate ${AU.playbackRate}`}
 function hlAt(i){if(!HL)return;let k=null;for(const r of HL.rg){if(r.a<=i)k=r.k;else break}
   const e=k==null?null:HL.el(k);if(HL.on&&HL.on!==e)HL.on.classList.remove('rd');if(e&&!e.classList.contains('rd')){e.classList.add('rd');if(HL.sc)HL.sc(e)}HL.on=e}
 function hlStop(){if(!HL)return;cancelAnimationFrame(HL.raf);if(HL.on)HL.on.classList.remove('rd');document.querySelectorAll('.rd').forEach(e=>e.classList.remove('rd'));HL=null}
