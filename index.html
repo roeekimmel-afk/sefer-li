@@ -812,6 +812,8 @@ if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>{HEV=null};
 /* speech: 1) Google TTS mp3 via <audio> (plays with silent switch on, no voice install needed)  2) fallback Web Speech */
 const SAYV=4;let AU=null,AQ=[],ABtn=null,UTT=null;
 function ttsChunks(t,keep){t=(keep?t:plain(t)).replace(/\s+/g,' ').trim();const out=[];while(t.length>190){let k=-1;for(const r of [/[.!?״׃:;]\s/g,/[,،]\s/g,/\s/g]){r.lastIndex=0;let m;while((m=r.exec(t))&&m.index<190)k=m.index+1;if(k>20)break}if(k<1)k=190;out.push(t.slice(0,k).trim());t=t.slice(k).trim()}if(t)out.push(t);return out}
+/* read-along: shorter clips (one clause, ≤7 words) so the estimated word timing re-syncs with the real audio at every clip start */
+function ttsShort(parts){const out=[];for(const p of parts){for(const cl of p.split(/(?<=[.!?״׃:;,،…])\s+/)){const w=cl.split(' ').filter(Boolean);if(!w.length)continue;const n=Math.ceil(w.length/7),sz=Math.ceil(w.length/n);for(let i=0;i<w.length;i+=sz)out.push(w.slice(i,i+sz).join(' '))}}return out}
 function sayUI(state){if(!ABtn)return;ABtn.classList.toggle('on',state!=='idle');const L={idle:ABtn.dataset.lbl,load:ABtn.dataset.ld||'⏳ טוען…',play:ABtn.dataset.pl||'⏹ עצור'};ABtn.innerHTML=L[state]||ABtn.dataset.lbl}
 function sayStop(){clearInterval(AWD);hlStop();AQ=[];UTT=null;if(AU){AU.onended=AU.onerror=null;try{AU.pause()}catch(e){}}try{speechSynthesis.cancel()}catch(e){}sayUI('idle');ABtn=null}
 function sayWS(text,rate,onEnd){const S=window.speechSynthesis;if(!S||!window.SpeechSynthesisUtterance){sayUI('idle');return toast('🔇 אין חיבור לשרת הקול ואין קול עברי במכשיר',4000)}
@@ -823,7 +825,7 @@ let AWD=0;
 function say(t,rate,btn,keep,o){
   if(ABtn&&btn&&ABtn===btn){sayStop();return}   // second tap = stop
   sayStop();sfxDuck();ABtn=btn||null;if(ABtn&&!ABtn.dataset.lbl)ABtn.dataset.lbl=ABtn.innerHTML;const SPD=o&&o.spd||SPEED;
-  const parts=ttsChunks(t,keep);if(!parts.length)return;if(o&&o.hl)hlInit(parts,o.hl);
+  let parts=ttsChunks(t,keep);if(o&&o.hl)parts=ttsShort(parts);if(!parts.length)return;if(o&&o.hl)hlInit(parts,o.hl);
   if(!AU){AU=new Audio();AU.setAttribute('playsinline','');AU.preload='auto';AU.addEventListener('timeupdate',()=>{if(AU.currentTime!==AU.__ct){AU.__ct=AU.currentTime;AU.__pt=performance.now()}});AU.addEventListener('playing',()=>{AU.__pt=performance.now()})}
   AQ=parts.slice();let started=false,failed=false,ci=-1;
   const fail=()=>{if(failed)return;failed=true;AQ=[];AU.onended=AU.onerror=null;if(o&&o.strict){sayUI('idle');ABtn=null;if(o.onFail)o.onFail();return}sayWS(plain(parts.join(' ')),SPD*.9,o&&o.onEnd)};
@@ -847,7 +849,7 @@ function hlInit(parts,h){hlStop();const S=parts.join(' '),norm1=x=>plain(x).repl
   let off=0;const ch=parts.map(p=>{const a=S.indexOf(p,off);const c={a,b:a+p.length,cum:[0]};let t=0;for(const x of p){t+=hlW(x);c.cum.push(t)}c.tot=t||1;off=c.b;return c});
   HL={S,rg,ch,el:h.el,sc:h.sc,c:-1,on:null,raf:0};const loop=()=>{if(!HL)return;hlTick();HL.raf=requestAnimationFrame(loop)};HL.raf=requestAnimationFrame(loop)}
 function hlTick(){if(!HL||HL.ws||!AU||HL.c<0)return;const c=HL.ch[HL.c];if(!c||AU.paused&&!AU.ended&&AU.currentTime===0)return;
-  let d=AU.duration;const len=c.b-c.a;if(!isFinite(d)||!d)d=len*.075+.45;
+  let d=AU.readyState>=1?AU.duration:NaN;const len=c.b-c.a;if(!isFinite(d)||!d||d>len*.4+3)d=len*.085+.4;
   const lead=.11,tail=Math.min(.3,d*.12),f=Math.max(0,Math.min(1,(AU.currentTime-lead)/Math.max(.1,d-lead-tail)));
   const want=f*c.tot;let j=0;while(j<c.cum.length-1&&c.cum[j+1]<=want)j++;hlAt(c.a+j)}
 function hlAt(i){if(!HL)return;let k=null;for(const r of HL.rg){if(r.a<=i)k=r.k;else break}
