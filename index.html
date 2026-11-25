@@ -357,6 +357,63 @@ h2.sec .bi .en{font-size:12.5px;color:var(--muted)}
 #rbar{padding-inline:max(10px,calc(50% - 400px))}
 }
 .spdb{direction:ltr;unicode-bidi:isolate}
+
+/* learn v2: two-line tool buttons, options, gloss, echo, mic, quiz, rich word popup, reader read-aloud */
+#ltools button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:7px 2px;min-height:52px;line-height:1.15}
+#ltools button b{font-size:14px;white-space:nowrap}
+#ltools button small{font-size:10.5px;font-weight:700;color:var(--rmuted);direction:ltr}
+#ltools #ltype{grid-column:auto}
+#lbar{position:relative}
+#lopt{position:absolute;z-index:3;top:calc(var(--safe-t,0px) + 58px);left:14px;right:14px;background:var(--rbg);border:1px solid var(--rline);border-radius:18px;box-shadow:0 12px 36px rgba(0,0,0,.25);padding:8px;display:flex;flex-direction:column;gap:6px}
+#lopt.hidden{display:none}
+#lopt .opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;color:var(--rink);text-decoration:none;text-align:start;background:color-mix(in srgb,var(--rink) 5%,transparent);font:inherit;width:100%}
+#lopt .opt span{display:flex;flex-direction:column}
+#lopt .opt small{color:var(--rmuted);direction:ltr;text-align:start;font-size:12px}
+#lopt input{width:22px;height:22px;accent-color:var(--accent);flex:none}
+#lheb.gl{line-height:1.25}
+#lheb.gl .w{display:inline-flex;flex-direction:column;align-items:center;vertical-align:top;margin:0 1px 10px}
+#lheb .gl{display:block;font-size:12.5px;font-weight:600;line-height:1.15;color:var(--rmuted);direction:ltr;max-width:8.5em;text-align:center;white-space:normal;min-height:1em}
+#lheb .w.yt{animation:ytP .9s ease-in-out infinite;box-shadow:0 0 0 2px #2ecc71}
+@keyframes ytP{50%{background:rgba(46,204,113,.28)}}
+#lheb .w.ok{background:rgba(46,204,113,.25);color:#1e9e55}
+#lheb .w.miss{background:rgba(231,76,60,.18);color:#d63c2c;text-decoration:underline wavy}
+#lmic.on{animation:ytP 1.2s ease-in-out infinite}
+#learn.quiz #ltools,#learn.quiz #lnav{display:none}
+#lquiz{border:2px solid var(--accent);border-radius:20px;padding:12px;margin-bottom:10px;background:color-mix(in srgb,var(--accent) 7%,transparent)}
+#lquiz.hidden{display:none}
+#lquiz .qh{font-weight:800;font-size:17px;text-align:center;margin-bottom:10px}
+#lquiz .qh small{display:block;direction:ltr;color:var(--rmuted);font-size:13px;font-weight:700}
+#lquiz .qh .qw{font-size:26px;color:var(--accent)}
+#lquiz .qo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#lquiz .qo button{padding:12px 6px;border-radius:14px;border:2px solid var(--rline);font-weight:800;font-size:16px;color:var(--rink);background:var(--rbg)}
+#lquiz .qo button.en{direction:ltr;font-size:15px}
+#lquiz .qo button.he{font-size:22px}
+#lquiz .qo button.good{border-color:#2ecc71;background:rgba(46,204,113,.2)}
+#lquiz .qo button.bad{border-color:#e74c3c;background:rgba(231,76,60,.15)}
+#lquiz .qf{display:flex;gap:8px;margin-top:10px}
+#lquiz .qf button{flex:1;padding:11px;border-radius:14px;font-weight:800;color:var(--rink);background:color-mix(in srgb,var(--rink) 8%,transparent)}
+#lquiz .qf button#lqgo{background:var(--accent);color:#fff}
+#lquiz .qf .hidden{display:none}
+#lpop{max-height:78vh;overflow-y:auto}
+#lpop .row{grid-template-columns:repeat(4,1fr)}
+#lpop .mo{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:4px;margin:-4px 0 8px}
+#lpop .mo:empty,#lpop .gr:empty,#lpop .rel:empty{display:none}
+#lpop .mo .pc{display:flex;flex-direction:column;align-items:center;padding:4px 9px;border-radius:12px;background:color-mix(in srgb,var(--accent) 14%,transparent)}
+#lpop .mo .pc.base{background:color-mix(in srgb,var(--rink) 8%,transparent)}
+#lpop .mo .pc b{font-size:22px}
+#lpop .mo .pc i{font-style:normal;font-size:12px;color:var(--rmuted);direction:ltr;font-weight:700}
+#lpop .mo .pl{align-self:center;font-weight:800;color:var(--rmuted)}
+#lpop .mo .eq{flex-basis:100%;direction:ltr;font-size:13px;color:var(--rmuted);font-weight:700}
+#lpop .gr{font-size:13px;color:var(--rmuted);margin-bottom:8px;font-weight:700}
+#lpop .rel{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:12px}
+#lpop .rel .lab{flex-basis:100%;font-size:12px;color:var(--rmuted);font-weight:700}
+#lpop .rel button{padding:5px 10px;border-radius:12px;border:1px solid var(--rline);color:var(--rink);font-weight:700;font-size:15px}
+#lpop .rel button small{direction:ltr;color:var(--rmuted);font-size:11px;margin-inline-start:4px}
+#rtext .rw{cursor:pointer;border-radius:5px}
+#rtext .rw.on{background:color-mix(in srgb,var(--accent) 25%,transparent)}
+#rtext .rw.rd{background:color-mix(in srgb,var(--accent) 38%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 45%,transparent)}
+#rplay.on{background:color-mix(in srgb,var(--accent) 30%,transparent)}
+@media (min-width:900px){#lopt{left:auto;right:auto;width:420px;inset-inline-end:max(14px,calc(50% - 400px))}}
 </style>
 <link rel="apple-touch-icon" href="icon.png"></head>
 <body>
@@ -381,7 +438,7 @@ h2.sec .bi .en{font-size:12.5px;color:var(--muted)}
   <div id="rbar">
     <button class="iconbtn" id="rclose" aria-label="חזרה">→</button>
     <div class="sp"></div>
-    <button class="iconbtn" id="rlearn" style="display:none" aria-label="מצב לימוד">🎓</button>
+    <button class="iconbtn" id="rplay" aria-label="הקראה · Read aloud" data-lbl="▶️" data-pl="⏸" data-ld="⏳">▶️</button><button class="iconbtn" id="rlearn" style="display:none" aria-label="מצב לימוד">🎓</button>
     <button class="iconbtn" id="rfav" aria-label="מועדף">🤍</button>
     <button class="iconbtn" id="rsetbtn" aria-label="הגדרות קריאה">Aa</button>
     <div id="prog"></div>
@@ -400,15 +457,17 @@ h2.sec .bi .en{font-size:12.5px;color:var(--muted)}
 </div>
 <div id="learn" class="hidden" dir="rtl">
   <div id="lbar"><button class="iconbtn" id="lclose" aria-label="חזרה">✕</button><div id="lstat"></div><div class="sp" style="flex:1"></div>
-    <a id="lpdf" target="_blank" rel="noopener">🖼️ PDF</a><button class="iconbtn" id="lfav" aria-label="מועדף">🤍</button>
-    <button class="iconbtn" id="lwordsbtn" aria-label="המילים שלי">📒</button></div>
+    <button class="iconbtn" id="lfull" aria-label="כל הסיפור · Full page">📖</button><button class="iconbtn" id="lfav" aria-label="מועדף">🤍</button>
+    <button class="iconbtn" id="lwordsbtn" aria-label="המילים שלי">📒</button><button class="iconbtn" id="loptb" aria-label="אפשרויות · Options">⚙️</button></div>
+  <div id="lopt" class="hidden"><label class="opt"><input type="checkbox" id="lqc"> <span><b>✅ בדיקה קצרה אחרי כל משפט</b><small>Quick check after each sentence (+2⭐)</small></span></label><a id="lpdf" class="opt" target="_blank" rel="noopener"><span><b>🖼️ הספר המקורי עם הציורים</b><small>Original book with pictures (PDF)</small></span></a><button class="opt" id="lfull2"><span><b>📖 כל הסיפור בעמוד אחד</b><small>Whole story on one page · read-aloud</small></span></button></div>
   <div id="lprog"><i></i></div><div id="lcount"></div>
   <div id="lend" class="hidden"></div><div id="lsent"><div id="lheb"></div><div id="len"></div><div id="lhint"></div></div>
-  <div id="ltools"><button id="lnq">אָ ניקוד</button><button id="lsay">🔊 שמע</button><button id="lslow" class="spdb">🐢 1×</button><button id="ltr">🇬🇧 תרגום</button><button id="ltype">✍️ הקלידו את המשפט · Type it</button></div>
+  <div id="lquiz" class="hidden"><div class="qh"></div><div class="qo"></div><div class="qf"><button id="lqskip">דלגו · Skip</button><button id="lqgo" class="hidden">המשך ← · Continue</button></div></div>
+  <div id="ltools"><button id="lnq"><b>אָ ניקוד</b><small>Vowels</small></button><button id="lsay" data-pl="<b>⏹ עצור</b><small>Stop</small>" data-ld="<b>⏳</b><small>Loading</small>"><b>🔊 שמע</b><small>Listen</small></button><button id="lslow" class="spdb"><b>🐢 1×</b><small>Speed</small></button><button id="ltr"><b>🇬🇧 תרגום</b><small>Translate</small></button><button id="lgl"><b>🔡 אנגלית</b><small>Under words</small></button><button id="lecho"><b>🦜 חזרו</b><small>Echo</small></button><button id="lmic"><b>🎤 קראו</b><small>Read it</small></button><button id="ltype"><b>✍️ הקלידו</b><small>Type it</small></button></div>
   <div id="lnav"><button id="lprev">→</button><button id="lnext">הבא ←</button></div>
 </div>
-<div id="lpop" class="hidden" dir="rtl"><div class="h"></div><div class="tr"></div><div class="en"></div>
-  <div class="row"><button class="lbtn" id="lpsay">🔊</button><button class="lbtn" id="lpsave">⭐ שמור</button><button class="lbtn" id="lpx">סגור</button></div></div>
+<div id="lpop" class="hidden" dir="rtl"><div class="h"></div><div class="tr"></div><div class="en"></div><div class="mo"></div><div class="gr"></div><div class="rel"></div>
+  <div class="row"><button class="lbtn" id="lpsay" data-ld="⏳" data-pl="⏹">🔊</button><button class="lbtn" id="lpslow" data-ld="⏳" data-pl="⏹">🐢</button><button class="lbtn" id="lpsave">⭐ שמור</button><button class="lbtn" id="lpx">✕</button></div></div>
 <div id="lcards" class="hidden" dir="rtl">
   <div id="lbar"><button class="iconbtn" id="lcclose">✕</button><div id="lcstat" style="font-weight:800"></div><div style="flex:1"></div><button class="spdb spdi" aria-label="Speech speed">1×</button></div>
   <div id="lcard"></div>
@@ -642,11 +701,10 @@ async function openStory(i){
   const q=$('#q').value.trim().replace(/[\u0591-\u05C7]/g,'');
   if(txt){
     let ps=txt.split('\n');while(ps.length>1&&(norm(ps[0])==s.n||(book&&norm(ps[0])==norm(book.t))))ps.shift();
-    let html=ps.map(p=>'<p>'+esc(p)+'</p>').join('');
-    if(q.length>1){const re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g');html=html.replace(re,m=>'<mark>'+m+'</mark>')}
+    let html=ps.map((p,pi)=>'<p data-p="'+pi+'">'+rWrap(p,q)+'</p>').join('');
     rt.innerHTML=html;CURPS=ps;
     startLearn(i,ps);
-  } else {$('#learn').classList.add('hidden');CURPS=null;} if(!txt)rt.innerHTML=`<div class="nopdf"><div class="e">🖼️</div>הסיפור הזה הוא ספר מצויר.<br>לחצו על הכפתור למטה כדי לפתוח אותו עם כל התמונות.</div>`;
+  } else {$('#learn').classList.add('hidden');CURPS=null;}$('#rplay').style.display=$('#rlearn').style.display=txt?'':'none'; if(!txt)rt.innerHTML=`<div class="nopdf"><div class="e">🖼️</div>הסיפור הזה הוא ספר מצויר.<br>לחצו על הכפתור למטה כדי לפתוח אותו עם כל התמונות.</div>`;
   // footer
   let f='';
   if(txt) f+=`<div class="theend">✨ סוף ✨</div>`;
@@ -671,7 +729,7 @@ function onScroll(){
   clearTimeout(saveT);saveT=setTimeout(()=>{if(curStory<0)return;prog[curStory]=Math.max(p>.97?1:p,prog[curStory]>=.98?1:0)||p;LS.set('prog',prog)},300);
 }
 R.addEventListener('scroll',onScroll,{passive:true});
-function closeReader(){if(typeof sayStop==='function')sayStop();if(!$('#learn').classList.contains('hidden')){$('#learn').classList.add('hidden');$('#lpop').classList.add('hidden')}R.classList.add('hidden');$('#rset').classList.add('hidden');document.body.style.overflow='';curStory=-1;
+function closeReader(){if(typeof sayStop==='function')sayStop();if(typeof lModesStop==='function')lModesStop();if(!$('#learn').classList.contains('hidden')){$('#learn').classList.add('hidden');$('#lpop').classList.add('hidden')}R.classList.add('hidden');$('#rset').classList.add('hidden');document.body.style.overflow='';curStory=-1;
   document.querySelector('meta[name=theme-color]').content='#ff8a3d'}
 
 /* ---------- routing ---------- */
@@ -729,7 +787,7 @@ $('#qx').onclick=()=>{$('#q').value='';$('#qx').classList.add('hidden');home()};
 R.append($('#learn'),$('#lpop'),$('#lcards'));
 let learnOn=LS.get('learn',false),nqOn=LS.get('nq',true);
 let SPEED=LS.get('speed',0);if(![.5,.75,1].includes(SPEED))SPEED=LS.get('slow',false)?.75:1;   // site-wide speech speed (per device/browser)
-function spdUI(){document.querySelectorAll('.spdb').forEach(b=>{const t=(SPEED==1?'1':SPEED==.75?'0.75':'0.5')+'×';b.textContent=(b.id==='lslow'?'🐢 ':'')+t;b.classList.toggle('slw',SPEED<1);b.title='Speed · מהירות: '+t})}
+function spdUI(){document.querySelectorAll('.spdb').forEach(b=>{const t=(SPEED==1?'1':SPEED==.75?'0.75':'0.5')+'×';if(b.id==='lslow')b.innerHTML='<b>🐢 '+t+'</b><small>Speed</small>';else b.textContent=t;b.classList.toggle('slw',SPEED<1);b.title='Speed · מהירות: '+t})}
 function spdSet(v){SPEED=v;LS.set('speed',v);spdUI();if(AU){AU.defaultPlaybackRate=v;AU.playbackRate=v}toast(`🐢 מהירות הקראה \u2066${(v==1?'1':v==.75?'0.75':'0.5')}×\u2069 · Speech speed`)}
 document.addEventListener('click',e=>{const b=e.target.closest('.spdb');if(!b)return;e.stopPropagation();spdSet(SPEED==1?.75:SPEED==.75?.5:1)},true);
 let LW=LS.get('words',{}),XP=LS.get('xp',0),DAYS=LS.get('days',{d:'',n:0}),LPOS=LS.get('lpos',{});
@@ -754,24 +812,24 @@ if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>{HEV=null};
 /* speech: 1) Google TTS mp3 via <audio> (plays with silent switch on, no voice install needed)  2) fallback Web Speech */
 const SAYV=4;let AU=null,AQ=[],ABtn=null,UTT=null;
 function ttsChunks(t,keep){t=(keep?t:plain(t)).replace(/\s+/g,' ').trim();const out=[];while(t.length>190){let k=-1;for(const r of [/[.!?״׃:;]\s/g,/[,،]\s/g,/\s/g]){r.lastIndex=0;let m;while((m=r.exec(t))&&m.index<190)k=m.index+1;if(k>20)break}if(k<1)k=190;out.push(t.slice(0,k).trim());t=t.slice(k).trim()}if(t)out.push(t);return out}
-function sayUI(state){if(!ABtn)return;ABtn.classList.toggle('on',state!=='idle');const L={idle:ABtn.dataset.lbl,load:'⏳ טוען…',play:'⏹ עצור'};ABtn.textContent=L[state]||ABtn.dataset.lbl}
-function sayStop(){clearInterval(AWD);hlStop();AQ=[];if(AU){AU.onended=AU.onerror=null;try{AU.pause()}catch(e){}}try{speechSynthesis.cancel()}catch(e){}sayUI('idle');ABtn=null}
-function sayWS(text,rate){const S=window.speechSynthesis;if(!S||!window.SpeechSynthesisUtterance){sayUI('idle');return toast('🔇 אין חיבור לשרת הקול ואין קול עברי במכשיר',4000)}
+function sayUI(state){if(!ABtn)return;ABtn.classList.toggle('on',state!=='idle');const L={idle:ABtn.dataset.lbl,load:ABtn.dataset.ld||'⏳ טוען…',play:ABtn.dataset.pl||'⏹ עצור'};ABtn.innerHTML=L[state]||ABtn.dataset.lbl}
+function sayStop(){clearInterval(AWD);hlStop();AQ=[];UTT=null;if(AU){AU.onended=AU.onerror=null;try{AU.pause()}catch(e){}}try{speechSynthesis.cancel()}catch(e){}sayUI('idle');ABtn=null}
+function sayWS(text,rate,onEnd){const S=window.speechSynthesis;if(!S||!window.SpeechSynthesisUtterance){sayUI('idle');return toast('🔇 אין חיבור לשרת הקול ואין קול עברי במכשיר',4000)}
   const u=new SpeechSynthesisUtterance(text);u.lang='he-IL';const v=heVoice();if(v)u.voice=v;u.rate=rate;UTT=u;
   if(HL){HL.ws=1;u.onboundary=e=>{if(UTT===u&&HL&&e.name!=='sentence')hlAt(e.charIndex)}}
-  u.onend=()=>{if(UTT===u){sayUI('idle');hlStop()}};u.onerror=e=>{if(UTT!==u)return;sayUI('idle');if(e.error!=='interrupted'&&e.error!=='canceled')toast('🔇 '+(e.error||'שגיאת קול'),4000)};
+  u.onend=()=>{if(UTT===u){UTT=null;sayUI('idle');ABtn=null;hlStop();if(onEnd)onEnd()}};u.onerror=e=>{if(UTT!==u)return;sayUI('idle');if(e.error!=='interrupted'&&e.error!=='canceled')toast('🔇 '+(e.error||'שגיאת קול'),4000)};
   sayUI('play');if(S.speaking||S.pending){S.cancel();setTimeout(()=>S.speak(u),150)}else S.speak(u)}
 let AWD=0;
 function say(t,rate,btn,keep,o){
   if(ABtn&&btn&&ABtn===btn){sayStop();return}   // second tap = stop
-  sayStop();sfxDuck();ABtn=btn||null;if(ABtn&&!ABtn.dataset.lbl)ABtn.dataset.lbl=ABtn.textContent;
+  sayStop();sfxDuck();ABtn=btn||null;if(ABtn&&!ABtn.dataset.lbl)ABtn.dataset.lbl=ABtn.innerHTML;const SPD=o&&o.spd||SPEED;
   const parts=ttsChunks(t,keep);if(!parts.length)return;if(o&&o.hl)hlInit(parts,o.hl);
   if(!AU){AU=new Audio();AU.setAttribute('playsinline','');AU.preload='auto';AU.addEventListener('timeupdate',()=>{if(AU.currentTime!==AU.__ct){AU.__ct=AU.currentTime;AU.__pt=performance.now()}});AU.addEventListener('playing',()=>{AU.__pt=performance.now()})}
   AQ=parts.slice();let started=false,failed=false,ci=-1;
-  const fail=()=>{if(failed)return;failed=true;AQ=[];AU.onended=AU.onerror=null;if(o&&o.strict){sayUI('idle');ABtn=null;if(o.onFail)o.onFail();return}sayWS(plain(parts.join(' ')),SPEED*.9)};
-  const next=()=>{if(!AQ.length){clearInterval(AWD);sayUI('idle');ABtn=null;hlStop();return}
+  const fail=()=>{if(failed)return;failed=true;AQ=[];AU.onended=AU.onerror=null;if(o&&o.strict){sayUI('idle');ABtn=null;if(o.onFail)o.onFail();return}sayWS(plain(parts.join(' ')),SPD*.9,o&&o.onEnd)};
+  const next=()=>{if(!AQ.length){clearInterval(AWD);sayUI('idle');ABtn=null;hlStop();if(o&&o.onEnd)o.onEnd();return}
     AU.__pt=performance.now();AU.src='https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=iw&q='+encodeURIComponent(AQ.shift());ci++;if(HL)HL.c=ci;
-    AU.defaultPlaybackRate=SPEED;AU.playbackRate=SPEED;try{AU.preservesPitch=AU.webkitPreservesPitch=true}catch(e){}
+    AU.defaultPlaybackRate=SPD;AU.playbackRate=SPD;try{AU.preservesPitch=AU.webkitPreservesPitch=true}catch(e){}
     AU.onended=next;AU.onerror=()=>{if(!started)fail();else next()};
     AU.onplaying=()=>{started=true;sayUI('play')};
     const pr=AU.play();if(pr&&pr.catch)pr.catch(e=>{if(e&&e.name==='NotAllowedError'){if(o&&o.onBlock){failed=true;sayStop();o.onBlock();return}toast('🔇 הדפדפן חסם את הקול – נסו שוב',4000);sayStop()}else fail()})};
@@ -787,13 +845,13 @@ function hlW(ch){return /[א-תa-zA-Z0-9]/.test(ch)?1:/[.!?…:;]/.test(ch)?5:/[
 function hlInit(parts,h){hlStop();const S=parts.join(' '),norm1=x=>plain(x).replace(/\s+/g,' ').trim();let pos=0;const rg=[];
   h.words.forEach((w,k)=>{w=norm1(w||'').replace(/^[^א-תa-zA-Z0-9]+|[^א-תa-zA-Z0-9]+$/g,'');if(!w)return;const i=S.indexOf(w,pos);if(i<0)return;rg.push({k,a:i,b:i+w.length});pos=i+w.length});
   let off=0;const ch=parts.map(p=>{const a=S.indexOf(p,off);const c={a,b:a+p.length,cum:[0]};let t=0;for(const x of p){t+=hlW(x);c.cum.push(t)}c.tot=t||1;off=c.b;return c});
-  HL={S,rg,ch,el:h.el,c:-1,on:null,raf:0};const loop=()=>{if(!HL)return;hlTick();HL.raf=requestAnimationFrame(loop)};HL.raf=requestAnimationFrame(loop)}
+  HL={S,rg,ch,el:h.el,sc:h.sc,c:-1,on:null,raf:0};const loop=()=>{if(!HL)return;hlTick();HL.raf=requestAnimationFrame(loop)};HL.raf=requestAnimationFrame(loop)}
 function hlTick(){if(!HL||HL.ws||!AU||HL.c<0)return;const c=HL.ch[HL.c];if(!c||AU.paused&&!AU.ended&&AU.currentTime===0)return;
   let d=AU.duration;const len=c.b-c.a;if(!isFinite(d)||!d)d=len*.075+.45;
   const lead=.11,tail=Math.min(.3,d*.12),f=Math.max(0,Math.min(1,(AU.currentTime-lead)/Math.max(.1,d-lead-tail)));
   const want=f*c.tot;let j=0;while(j<c.cum.length-1&&c.cum[j+1]<=want)j++;hlAt(c.a+j)}
 function hlAt(i){if(!HL)return;let k=null;for(const r of HL.rg){if(r.a<=i)k=r.k;else break}
-  const e=k==null?null:HL.el(k);if(HL.on&&HL.on!==e)HL.on.classList.remove('rd');if(e&&!e.classList.contains('rd'))e.classList.add('rd');HL.on=e}
+  const e=k==null?null:HL.el(k);if(HL.on&&HL.on!==e)HL.on.classList.remove('rd');if(e&&!e.classList.contains('rd')){e.classList.add('rd');if(HL.sc)HL.sc(e)}HL.on=e}
 function hlStop(){if(!HL)return;cancelAnimationFrame(HL.raf);if(HL.on)HL.on.classList.remove('rd');document.querySelectorAll('.rd').forEach(e=>e.classList.remove('rd'));HL=null}
 function addXP(n){XP+=n;LS.set('xp',XP);const d=new Date().toDateString();
   if(DAYS.d!==d){const y=new Date(Date.now()-864e5).toDateString();DAYS={d,n:DAYS.d===y?DAYS.n+1:1};LS.set('days',DAYS)}lStat()}
@@ -833,8 +891,8 @@ function startLearn(i,ps){lStory=i;lSents=splitSents(ps);lI=Math.min(LPOS[i]||0,
   $('#learn').classList.remove('hidden');$('#lnq').classList.toggle('on',nqOn);spdUI();lStat();showSent()}
 function learnDone(on){$('#learn').classList.toggle('done',on);$('#lend').classList.toggle('hidden',!on)}
 function stopLearn(){learnOn=false;LS.set('learn',false);$('#learn').classList.add('hidden');$('#lpop').classList.add('hidden');sayStop()}
-function renderTok(tok){$('#lheb').innerHTML=tok.map((t,k)=>t.s!=null?esc(t.s):`<span class="w${LW[clean(t.p)]?' saved':''}" data-k="${k}">${esc(nqOn?t.v:t.p)}</span>`).join('')}
-async function showSent(){const s=lSents[lI];if(s==null)return;learnDone(false);sayStop();const my=lI;$('#lpop').classList.add('hidden');
+function renderTok(tok){if(!tok)return;const H=$('#lheb');H.classList.toggle('gl',GLON);H.innerHTML=tok.map((t,k)=>t.s!=null?esc(t.s):`<span class="w${LW[clean(t.p)]?' saved':''}" data-k="${k}">${esc(nqOn?t.v:t.p)}${GLON?'<small class="gl">'+esc(GLC[clean(t.p)]==null?'…':GLC[clean(t.p)])+'</small>':''}</span>`).join('')}
+async function showSent(){const s=lSents[lI];if(s==null)return;learnDone(false);sayStop();lModesStop();quizHide();const my=lI;$('#lpop').classList.add('hidden');
   LPOS[lStory]=lI;LS.set('lpos',LPOS);
   $('#lprog i').style.width=((lI+1)/lSents.length*100)+'%';$('#lcount').textContent=`משפט ${lI+1} מתוך ${lSents.length}`;
   $('#lprev').style.visibility=lI?'visible':'hidden';$('#lnext').textContent=lI==lSents.length-1?'סיימתי! 🎉':'הבא ←';
@@ -842,32 +900,33 @@ async function showSent(){const s=lSents[lI];if(s==null)return;learnDone(false);
   $('#len').textContent='🇬🇧 נסו להבין לבד – ואז לחצו כאן לתרגום';$('#len').className='blur';$('#len').style.filter='none';$('#lhint').textContent='👆 לחצו על מילה כדי לראות מה היא אומרת';
   if(nqOn){try{const t=await nikud(s);if(my!==lI)return;lTok=t;renderTok(t)}catch(e){toast('ניקוד דורש אינטרנט')}}
   if(lSents[lI+1]&&nqOn)nikud(lSents[lI+1]).catch(()=>{});
+  if(GLON)glossLoad(my);
 }
 async function showTr(){const s=lSents[lI],my=lI;const L=$('#len');L.className='';L.textContent='⏳';
   try{const t=await trans(s);if(my!==lI)return;L.textContent=t.en}catch(e){L.textContent='התרגום דורש אינטרנט'}}
-async function wordPop(k){const t=lTok[k];if(!t||!t.p)return;const w=clean(t.p);if(!w)return;
+function wordPop(k){const t=lTok[k];if(!t||!t.p)return;const w=clean(t.p);if(!w)return;
   document.querySelectorAll('#lheb .w.on').forEach(e=>e.classList.remove('on'));const el=document.querySelector(`#lheb .w[data-k="${k}"]`);el&&el.classList.add('on');
-  lPop={w,v:clean(t.v)||w};const P=$('#lpop');P.classList.remove('hidden');P.querySelector('.h').textContent=lPop.v;P.querySelector('.tr').textContent='';P.querySelector('.en').textContent='⏳';
-  $('#lpsave').textContent=LW[w]?'✓ שמור':'⭐ שמור';say(lPop.v);
-  try{const r=await trans(w);if(lPop.w!==w)return;lPop.en=r.en;P.querySelector('.tr').textContent=r.rm?'['+r.rm+']':'';
-    P.querySelector('.en').textContent=r.en+(r.alt.length?'  ·  '+r.alt.join(', '):'')}catch(e){P.querySelector('.en').textContent='התרגום דורש אינטרנט'}}
-$('#lheb').addEventListener('click',e=>{const w=e.target.closest('.w');if(w)wordPop(+w.dataset.k)});
+  let n=0;for(let j=0;j<k;j++)if(lTok[j].p&&norm(lTok[j].p)===norm(w))n++;
+  popWord(w,clean(t.v)||w,{s:lSents[lI],n})}
+$('#lheb').addEventListener('click',e=>{const w=e.target.closest('.w');if(!w)return;if(w.classList.contains('miss')||w.classList.contains('ok'))w.classList.remove('miss','ok');wordPop(+w.dataset.k)});
 $('#learn').addEventListener('click',e=>{if(!e.target.closest('.w'))$('#lpx').click()});
 $('#len').onclick=()=>{if($('#len').className=='blur')showTr()};
 $('#ltr').onclick=showTr;
-$('#lsay').onclick=e=>{const tk=lTok||[],ix=[];tk.forEach((t,k)=>{if(t.p!=null)ix.push(k)});
+$('#lsay').onclick=e=>{lModesStop();const tk=lTok||[],ix=[];tk.forEach((t,k)=>{if(t.p!=null)ix.push(k)});
   say(lTok?lTok.map(t=>t.s!=null?t.s:t.v).join(''):lSents[lI],0,$('#lsay'),0,{hl:{words:ix.map(k=>tk[k].v||tk[k].p),el:j=>document.querySelector(`#lheb .w[data-k="${ix[j]}"]`)}})};
-$('#ltype').onclick=()=>{sayStop();spDictate(lSents[lI])};
+$('#ltype').onclick=()=>{sayStop();lModesStop();spDictate(lSents[lI])};
 $('#lnq').onclick=()=>{nqOn=!nqOn;LS.set('nq',nqOn);$('#lnq').classList.toggle('on',nqOn);showSent()};
 $('#lprev').onclick=()=>{if(lI>0){lI--;showSent()}};
-$('#lnext').onclick=()=>{if(lI<lSents.length-1){lI++;addXP(1);showSent()}else{addXP(10);confetti();toast('🎉 כל הכבוד! סיימתם את הסיפור! +10⭐');prog[lStory]=1;LS.set('prog',prog);LPOS[lStory]=0;LS.set('lpos',LPOS);sayStop();learnDone(true)}};
-$('#lclose').onclick=()=>$('#rclose').click();
+$('#lnext').onclick=()=>{if(QC&&!$('#learn').classList.contains('quiz')&&quizShow())return;lAdv()};
+function lAdv(){if(lI<lSents.length-1){lI++;addXP(1);showSent()}else{addXP(10);confetti();toast('🎉 כל הכבוד! סיימתם את הסיפור! +10⭐');prog[lStory]=1;LS.set('prog',prog);LPOS[lStory]=0;LS.set('lpos',LPOS);sayStop();learnDone(true)}}
+$('#lclose').onclick=()=>{$('#lopt').classList.add('hidden');$('#rclose').click()};
 $('#lfav').onclick=()=>{$('#rfav').click();$('#lfav').textContent=$('#rfav').textContent};
 $('#lend').addEventListener('click',e=>{if(e.target.closest('#lagain')){lI=0;showSent()}});
-$('#lpx').onclick=()=>{$('#lpop').classList.add('hidden');document.querySelectorAll('#lheb .w.on').forEach(e=>e.classList.remove('on'))};
-$('#lpsay').onclick=()=>lPop&&say(lPop.v,.6,$('#lpsay'));
-$('#lpsave').onclick=()=>{if(!lPop)return;const w=lPop.w;if(LW[w]){delete LW[w];toast('הוסר מהמילים שלי')}else{LW[w]={v:lPop.v,en:lPop.en||'',b:0,s:lStory};addXP(2);toast('⭐ נשמר במילים שלי!')}
-  LS.set('words',LW);$('#lpsave').textContent=LW[w]?'✓ שמור':'⭐ שמור';renderTok(lTok);lStat()};
+$('#lpx').onclick=()=>{$('#lpop').classList.add('hidden');document.querySelectorAll('#lheb .w.on,#rtext .rw.on').forEach(e=>e.classList.remove('on'))};
+$('#lpsay').onclick=()=>lPop&&say(lPop.v,0,$('#lpsay'));
+$('#lpslow').onclick=()=>lPop&&say(lPop.v,0,$('#lpslow'),0,{spd:.5});
+$('#lpsave').onclick=()=>{if(!lPop)return;const w=lPop.w;if(LW[w]){delete LW[w];toast('הוסר מהמילים שלי')}else{LW[w]={v:lPop.v,en:lPop.en||'',b:0,s:curStory>=0?curStory:lStory};addXP(2);toast('⭐ נשמר במילים שלי!')}
+  LS.set('words',LW);$('#lpsave').textContent=LW[w]?'✓ שמור':'⭐ שמור';if(!$('#learn').classList.contains('hidden'))renderTok(lTok);lStat()};
 let sx=null;$('#lsent').addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
 $('#lsent').addEventListener('touchend',e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>60)(dx>0?$('#lnext'):$('#lprev')).click()});
 /* flashcards */
@@ -883,7 +942,136 @@ $('#lcno').onclick=()=>{if(!cw)return;LW[cw].b=0;LS.set('words',LW);cq.push(cw);
 spdUI();
 $('#lwordsbtn').onclick=()=>{cq=[];$('#lcards').classList.remove('hidden');nextCard()};
 $('#lcclose').onclick=()=>$('#lcards').classList.add('hidden');
-$('#rlearn').onclick=()=>{if(!CURPS||curStory<0)return toast('אין טקסט לסיפור הזה');learnOn=true;LS.set('learn',true);startLearn(curStory,CURPS)};
+$('#rlearn').onclick=()=>{if(!CURPS||curStory<0)return toast('אין טקסט לסיפור הזה');sayStop();$('#lpop').classList.add('hidden');learnOn=true;LS.set('learn',true);LPOS[curStory]=splitSents(CURPS.slice(0,rFirstVis())).length;startLearn(curStory,CURPS)};
+/* ===== learn v2: reader read-aloud + word tap, rich word popup (prefixes/grammar/similar), gloss, echo, mic, quick check ===== */
+var GLON=LS.get('gloss',false),GLC={},QC=LS.get('qc',false),MQC={},ECH=0,MIC=null,MICT=0,RPT=0;
+function rWrap(p,q){const qs=q&&q.length>1?norm(q).split(' ').filter(Boolean):[];
+  return p.split(/(\s+)/).map(w=>!w?'':/^\s+$/.test(w)?w:'<span class="rw">'+(qs.length&&qs.some(x=>norm(w).includes(x))?'<mark>'+esc(w)+'</mark>':esc(w))+'</span>').join('')}
+function rFirstVis(){const ps=document.querySelectorAll('#rtext p[data-p]');const top=($('#rhead')?$('#rhead').getBoundingClientRect().bottom:0)+10;
+  for(const p of ps){if(p.getBoundingClientRect().bottom>top)return +p.dataset.p}return 0}
+function rScroll(e){const r=e.getBoundingClientRect(),H=window.innerHeight;if(r.top<H*.18||r.bottom>H*.82)R.scrollBy({top:r.top-H*.35,behavior:'smooth'})}
+function rPlay(pi,tok){if(tok!==RPT||R.classList.contains('hidden')||!$('#learn').classList.contains('hidden')||!CURPS)return;
+  if(pi>=CURPS.length)return;const P=document.querySelector(`#rtext p[data-p="${pi}"]`);if(!P)return;
+  const ws=[...P.querySelectorAll('.rw')];if(!ws.length||!/[א-ת]/.test(CURPS[pi]))return rPlay(pi+1,tok);
+  say(CURPS[pi],0,$('#rplay'),0,{hl:{words:ws.map(e=>e.textContent),el:j=>ws[j],sc:rScroll},onEnd:()=>{if(tok===RPT)setTimeout(()=>rPlay(pi+1,tok),250)}})}
+$('#rplay').onclick=e=>{e.stopPropagation();const on=$('#rplay').classList.contains('on');RPT++;$('#lpop').classList.add('hidden');if(on){sayStop();return}rPlay(rFirstVis(),RPT)};
+R.addEventListener('click',e=>{if(!$('#learn').classList.contains('hidden')||e.target.closest('#lpop'))return;
+  const w=e.target.closest('#rtext .rw');if(!w){if(!e.target.closest('#rbar,#rhead'))$('#lpx').click();return}
+  RPT++;document.querySelectorAll('#rtext .rw.on').forEach(x=>x.classList.remove('on'));w.classList.add('on');
+  const P=w.closest('p'),pi=+P.dataset.p,ww=clean(w.textContent);if(!ww)return;let n=0;
+  for(const x of P.querySelectorAll('.rw')){if(x===w)break;if(norm(clean(x.textContent))===norm(ww))n++}
+  popWord(ww,ww,{s:CURPS[pi],n})});
+function goFull(){lModesStop();sayStop();quizHide();$('#lopt').classList.add('hidden');$('#lpop').classList.add('hidden');if(!CURPS)return;
+  let c=0,pi=0;for(let k=0;k<CURPS.length;k++){c+=splitSents([CURPS[k]]).length;if(c>lI){pi=k;break}}
+  $('#learn').classList.add('hidden');const P=document.querySelector(`#rtext p[data-p="${pi}"]`);
+  if(P)requestAnimationFrame(()=>{R.scrollTop+=P.getBoundingClientRect().top-window.innerHeight*.25});toast('📖 כל הסיפור · ▶️ להקראה · Tap ▶️ to read aloud')}
+$('#lfull').onclick=goFull;$('#lfull2').onclick=goFull;
+$('#loptb').onclick=e=>{e.stopPropagation();$('#lqc').checked=QC;$('#lopt').classList.toggle('hidden')};
+$('#lqc').onchange=()=>{QC=$('#lqc').checked;LS.set('qc',QC);toast(QC?'✅ בדיקה קצרה אחרי כל משפט · Quick check ON':'בדיקה קצרה כבויה · Quick check OFF')};
+$('#lpdf').addEventListener('click',()=>$('#lopt').classList.add('hidden'));
+$('#learn').addEventListener('click',e=>{if(!e.target.closest('#lopt,#loptb'))$('#lopt').classList.add('hidden')});
+/* rich word popup */
+const PFX={'ו':'and','ב':'in','ל':'to','כ':'like','מ':'from','ש':'that','ה':'the'},PFXA={'ב':'in the','ל':'to the','כ':'like the'};
+const POSN={6:'Noun · שם עצם',1:'Adjective · שם תואר',13:'Verb · פועל',9:'Pronoun · כינוי',3:'Adverb · תואר הפועל',10:'Preposition · מילת יחס'};
+async function dmorph(s){if(MQC[s])return MQC[s];
+  const r=await fetch('https://nakdan-2-0.loadbalancer.dicta.org.il/api',{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},
+    body:JSON.stringify({task:'nakdan',data:s,genre:'modern',addmorph:true,keepqq:false,nodageshdefmem:false,patachma:false,keepnikud:true})});
+  return MQC[s]=(await r.json()).filter(t=>!t.sep)}
+function popWord(w,v,ctx){const my={w,v};lPop=my;const P=$('#lpop'),q=c=>P.querySelector(c);P.classList.remove('hidden');P.scrollTop=0;
+  q('.h').textContent=v;q('.tr').textContent='';q('.en').textContent='⏳';q('.mo').innerHTML='';q('.gr').innerHTML='';q('.rel').innerHTML='';
+  $('#lpsave').textContent=LW[w]?'✓ שמור':'⭐ שמור';say(v);
+  trans(w).then(r=>{if(lPop!==my)return;my.en=r.en;q('.tr').textContent=r.rm?'['+r.rm+']':'';q('.en').textContent=r.en+(r.alt.length?'  ·  '+r.alt.join(', '):'')})
+    .catch(()=>{if(lPop===my)q('.en').textContent='התרגום דורש אינטרנט'});
+  if(!ctx||!ctx.s)return;
+  dmorph(ctx.s).then(async tk=>{if(lPop!==my)return;const nw=norm(w);let t=null,n=ctx.n||0;for(const x of tk)if(norm(clean(x.word||''))===nw){if(!n--){t=x;break}}
+    if(!t||!t.options||!t.options[0])return;const op=t.options[0],vw=clean(op[0]),m=op[1]&&op[1][0];
+    if(plain(v)===v&&vw){my.v=vw.replace(/\|/g,'');q('.h').textContent=my.v}
+    const pr=vw.split('|'),pre=pr.length>1?pr[0]:'',base=pr.length>1?pr.slice(1).join(''):vw.replace(/\|/g,'');
+    let c=0n;try{c=m?BigInt(m[0]):0n}catch(e){}const art=!!((c>>6n)&1n),lem=m?m[1]:'';
+    const gr=[];const pos=Number((c>>16n)&15n);if(((c>>51n)&1n))gr.push(POSN[13]);else if(POSN[pos])gr.push(POSN[pos]);
+    const ms=!!((c>>21n)&1n),fs=!!((c>>22n)&1n),sg=!!((c>>24n)&1n),pl=!!((c>>25n)&1n);
+    if(ms!==fs)gr.push(ms?'masculine · זכר':'feminine · נקבה');if(sg!==pl)gr.push(sg?'singular · יחיד':'plural · רבים');
+    const bp=norm(plain(base)),lp=norm(plain(lem||''));let lemEn='';
+    if(lp)try{lemEn=(await trans(plain(lem))).en}catch(e){}if(lPop!==my)return;
+    let h=gr.length?'<div dir="ltr">'+esc(gr.join('  ·  '))+'</div>':'';
+    if(lp&&lp!==bp)h+=`<div>צורת בסיס · Base form: <b>${esc(lem)}</b>${lemEn?' <span dir="ltr">('+esc(lemEn)+')</span>':''}</div>`;
+    q('.gr').innerHTML=h;
+    if(pre){const L=pre.match(/[א-ת][֑-ׇ]*/g)||[],ch=[],eq=[];
+      for(let k=0;k<L.length;k++){const a=L[k][0],b=L[k+1]&&L[k+1][0];
+        if(a==='כ'&&b==='ש'){ch.push([L[k]+L[k+1],'when']);k++;continue}
+        const last=k===L.length-1,mean=last&&art&&PFXA[a]?PFXA[a]:PFX[a]||'';ch.push([L[k],mean])}
+      let bEn=lemEn;if(!bEn)try{bEn=(await trans(plain(base))).en}catch(e){}if(lPop!==my)return;
+      q('.mo').innerHTML=ch.map(([x,e])=>`<span class="pc"><b>${esc(x)}</b><i>${esc(e)}</i></span><span class="pl">+</span>`).join('')+
+        `<span class="pc base"><b>${esc(base)}</b><i>${esc(bEn||'')}</i></span><div class="eq">${esc(ch.map(x=>x[1]).concat(bEn||plain(base)).join(' + '))}</div>`}
+    const root=lp&&lp.length>=3?lp:bp;if(root.length<3)return;const seen=new Set([nw]),out=[];
+    for(const e of [...MW.map(x=>[x[0],x[1],x[2]]),...SW.map(x=>[x[0],x[1],x[3]])]){const k=norm(e[0]);if(seen.has(k)||!k.includes(root))continue;seen.add(k);out.push(e);if(out.length>=4)break}
+    if(out.length)q('.rel').innerHTML='<div class="lab">מילים דומות · Similar words</div>'+out.map(e=>`<button data-w="${esc(e[0])}" data-v="${esc(e[2]||e[0])}">${esc(e[2]||e[0])}<small>${esc(e[1]||'')}</small></button>`).join('');
+  }).catch(()=>{})}
+$('#lpop').addEventListener('click',e=>{const b=e.target.closest('.rel button');if(b){e.stopPropagation();popWord(b.dataset.w,b.dataset.v,{s:b.dataset.w,n:0})}});
+/* gloss: small English under each word (one batched request per sentence) */
+async function glossLoad(my){const ws=[...new Set(lSents[my].split(/\s+/).map(clean).filter(w=>w&&/[א-ת]/.test(w)&&GLC[w]==null))];if(!ws.length)return;
+  try{const r=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=iw&tl=en&dt=t&q='+encodeURIComponent(ws.join('\n')));const j=await r.json();
+    const L=(j[0]||[]).map(x=>x[0]||'').join('').split('\n').map(x=>x.trim().replace(/[.,!?;:"]+$/,''));
+    if(L.length===ws.length)ws.forEach((w,k)=>GLC[w]=L[k]);else ws.forEach(w=>{GLC[w]=TRC[w]?TRC[w].en:''})}catch(e){ws.forEach(w=>{if(GLC[w]==null)GLC[w]=''})}
+  if(my===lI&&GLON)renderTok(lTok)}
+$('#lgl').classList.toggle('on',GLON);
+$('#lgl').onclick=()=>{GLON=!GLON;LS.set('gloss',GLON);$('#lgl').classList.toggle('on',GLON);renderTok(lTok);if(GLON)glossLoad(lI);toast(GLON?'🔡 אנגלית מתחת למילים · English under words':'🔡 בלי אנגלית · Gloss off')};
+/* echo: hear a word, say it back, next word */
+function lIx(){return (lTok||[]).map((t,k)=>t.p&&/[א-ת]/.test(t.p)?k:-1).filter(k=>k>=0)}
+function echoStop(){const was=$('#lecho').classList.contains('on');ECH++;$('#lecho').classList.remove('on');document.querySelectorAll('#lheb .w.yt').forEach(e=>e.classList.remove('yt'));if(was)sayStop()}
+$('#lecho').onclick=()=>{if($('#lecho').classList.contains('on'))return echoStop();lModesStop();$('#lpop').classList.add('hidden');const tok=++ECH;$('#lecho').classList.add('on');let j=0;
+  toast('🦜 הקשיבו וחזרו על כל מילה · Listen, then repeat each word');
+  const step=()=>{if(tok!==ECH)return;document.querySelectorAll('#lheb .w.yt,#lheb .w.rd').forEach(e=>e.classList.remove('yt','rd'));const ix=lIx();
+    if(j>=ix.length){echoStop();toast('🦜 כל הכבוד! · Well done!');addXP(1);return}
+    const k=ix[j++],t=lTok[k],el=()=>document.querySelector(`#lheb .w[data-k="${k}"]`),v=t.v||t.p;let done=false;
+    const after=()=>{if(done||tok!==ECH)return;done=true;const e=el();if(e){e.classList.remove('rd');e.classList.add('yt')}setTimeout(step,(1200+150*plain(v).length)/SPEED)};
+    say(v,0,null,0,{onEnd:after});const e=el();e&&e.classList.add('rd');setTimeout(after,6000)};
+  step()};
+/* mic: read it yourself */
+function lev(a,b){const d=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=d[0];d[0]=i;for(let j=1;j<=b.length;j++){const t=d[j];d[j]=Math.min(d[j]+1,d[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return d[b.length]}
+function micStop(){clearTimeout(MICT);if(MIC){const r=MIC;MIC=null;try{r.abort()}catch(e){}}$('#lmic').classList.remove('on')}
+$('#lmic').onclick=()=>{if(MIC){try{MIC.stop()}catch(e){}return}const SRc=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SRc)return toast('🎤 הדפדפן הזה לא תומך בזיהוי דיבור · Speech recognition is not supported in this browser',4500);
+  lModesStop();sayStop();$('#lpop').classList.add('hidden');const ws=lIx().map(k=>({k,n:norm(clean(lTok[k].p))})).filter(w=>w.n);if(!ws.length)return;
+  document.querySelectorAll('#lheb .w').forEach(e=>e.classList.remove('ok','miss'));
+  const r=new SRc();r.lang='he-IL';r.interimResults=true;r.continuous=true;r.maxAlternatives=1;MIC=r;const ok=new Set();let heard=false;
+  const mark=txt=>{const said=norm(txt).split(' ').filter(Boolean);let pos=0;ok.clear();
+    for(const s of said){for(let d=0;d<4&&pos+d<ws.length;d++){const W=ws[pos+d].n;if(W===s||(W.length>=4&&lev(W,s)<=1)){ok.add(pos+d);pos+=d+1;break}}}
+    ws.forEach((w,i)=>{const e=document.querySelector(`#lheb .w[data-k="${w.k}"]`);e&&e.classList.toggle('ok',ok.has(i))})};
+  r.onresult=e=>{let t='';for(const x of e.results)t+=x[0].transcript+' ';if(t.trim())heard=true;mark(t);if(ok.size===ws.length)try{r.stop()}catch(e){}};
+  r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed')toast('🎤 אפשרו גישה למיקרופון · Allow the microphone (iPhone: Settings → Siri & Dictation must be on)',6000);
+    else if(e.error==='no-speech')toast('🎤 לא שמענו כלום · We didn\'t hear anything');else if(e.error!=='aborted')toast('🎤 '+e.error)};
+  r.onend=()=>{clearTimeout(MICT);if(MIC!==r)return;MIC=null;$('#lmic').classList.remove('on');if(!heard)return;
+    ws.forEach((w,i)=>{if(!ok.has(i)){const e=document.querySelector(`#lheb .w[data-k="${w.k}"]`);e&&e.classList.add('miss')}});
+    if(ok.size===ws.length){fxOk($('#lheb'));addXP(3);toast('🎉 קראתם הכל נכון! · Perfect reading! +3⭐')}
+    else toast(`🎤 ${ok.size}/${ws.length} מילים נכונות · words correct – לחצו על מילה אדומה לשמוע · tap a red word to hear it`,4500)};
+  try{r.start()}catch(e){MIC=null;return toast('🎤 '+e.message)}
+  $('#lmic').classList.add('on');toast('🎤 קראו את המשפט בקול · Read the sentence aloud');MICT=setTimeout(()=>{try{r.stop()}catch(e){}},Math.max(15000,4000+ws.length*1200))};
+function lModesStop(){RPT++;echoStop();micStop()}
+/* quick check (optional, off by default) */
+const QSTOP=new Set('של את על אל עם זה זאת זו הוא היא הם הן אני אתה את אנחנו אתם גם לא כן מה מי כי אם או אבל רק עוד כל יש אין היה הייתה היו אז כך כמו שם פה עד אחרי לפני בין לו לה לי לך להם לנו אותו אותה אותם אותי שלו שלה שלי ולא וגם הנה כבר מאוד'.split(' '));
+function quizHide(){$('#learn').classList.remove('quiz');$('#lquiz').classList.add('hidden')}
+function quizShow(){const c=[],seen=new Set();for(const k of lIx()){const t=lTok[k],n=norm(clean(t.p));if(n.length>=2&&!QSTOP.has(n)&&!seen.has(n)){seen.add(n);c.push(t)}}
+  if(!c.length||!MW.length)return false;const t=c[Math.floor(Math.random()*c.length)],w=clean(t.p),v=clean(t.v)||w,my=lI,L=$('#learn'),Q=$('#lquiz');
+  sayStop();lModesStop();$('#lpop').classList.add('hidden');L.classList.add('quiz');Q.classList.remove('hidden');Q.querySelector('.qh').textContent='⏳';Q.querySelector('.qo').innerHTML='';
+  $('#lqgo').classList.add('hidden');$('#lqskip').classList.remove('hidden');
+  const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+  trans(w).then(r=>{if(my!==lI||!L.classList.contains('quiz'))return;const en=(r.en||'').trim();if(!en||norm(en)===norm(w)){quizHide();lAdv();return}
+    const type2=c.length>=2&&Math.random()<.5;let opts;
+    if(!type2){const ds=[],lo=new Set([en.toLowerCase()]);for(const e of shuf(MW.slice())){const x=(e[1]||'').trim();if(x&&!lo.has(x.toLowerCase())&&!norm(x).includes(norm(w))){lo.add(x.toLowerCase());ds.push(x)}if(ds.length>=3)break}
+      opts=shuf([[en,1],...ds.map(x=>[x,0])]);Q.querySelector('.qh').innerHTML=`מה פירוש המילה? <small>What does this word mean?</small><div class="qw">${esc(v)}</div>`}
+    else{const ds=[],lo=new Set([norm(w)]);for(const x of shuf(c.slice())){const n=norm(clean(x.p));if(!lo.has(n)){lo.add(n);ds.push(clean(x.v)||clean(x.p))}if(ds.length>=3)break}
+      for(const e of shuf(MW.slice())){if(ds.length>=3)break;const n=norm(e[0]);if(!lo.has(n)){lo.add(n);ds.push(e[2]||e[0])}}
+      opts=shuf([[v,1],...ds.map(x=>[x,0])]);Q.querySelector('.qh').innerHTML=`איזו מילה פירושה… <small>Which word means…</small><div class="qw" dir="ltr">${esc(en)}</div>`}
+    Q.querySelector('.qo').innerHTML=opts.map(([x,g])=>`<button class="${type2?'he':'en'}" data-g="${g}">${esc(x)}</button>`).join('');
+    Q.querySelector('.qo').onclick=e=>{const b=e.target.closest('button');if(!b||Q.querySelector('.qo').dataset.done==='1')return;Q.querySelector('.qo').dataset.done='1';
+      if(b.dataset.g==='1'){b.classList.add('good');fxOk(b,false);addXP(2);lStat();setTimeout(()=>{if(my===lI&&L.classList.contains('quiz')){quizHide();lAdv()}},800)}
+      else{b.classList.add('bad');Q.querySelector('.qo [data-g="1"]').classList.add('good');fxBad(b);say(v);$('#lqgo').classList.remove('hidden');$('#lqskip').classList.add('hidden')}};
+    Q.querySelector('.qo').dataset.done='';
+  }).catch(()=>{if(my===lI){quizHide();lAdv()}});
+  return true}
+$('#lqskip').onclick=()=>{quizHide();lAdv()};$('#lqgo').onclick=()=>{quizHide();lAdv()};
+
 /* ---------- ✍️ spelling ---------- */
 let SW=[],MS=[],MW=[],spRecent=[];
 const SPG=[['hear','🔊 שמעו וכתבו','Hear & type'],['tiles','🧩 אריחי אותיות','Letter tiles'],['fill','📝 השלימו משפט','Fill the sentence'],['tricky','🔤 אותיות מבלבלות','Tricky letters'],['sent','🗣️ שמעו משפט','Hear a sentence']];
@@ -1109,7 +1297,7 @@ document.addEventListener('keydown',e=>{
     b=kb.querySelector(`[data-c="${c}"],[data-fx="${c}"]`)||[...kb.querySelectorAll('[data-t]')].find(x=>!x.classList.contains('used')&&x.textContent===c);
     if(b){e.preventDefault();b.click()}return}
   const L=document.getElementById('learn');
-  if(L&&!L.classList.contains('hidden')&&!L.classList.contains('done')){
+  if(L&&!L.classList.contains('hidden')&&!L.classList.contains('done')&&!L.classList.contains('quiz')){
     if(e.key==='ArrowLeft'||e.key===' '){e.preventDefault();document.getElementById('lnext').click()}
     else if(e.key==='ArrowRight'){e.preventDefault();const p=document.getElementById('lprev');if(p.style.visibility!=='hidden')p.click()}
     else if(e.key==='Escape')document.getElementById('lclose').click()}
